@@ -114,6 +114,11 @@ It refuses to overwrite an existing skill and prints the difference instead.
 Relay any `SKIP` lines to the user — a skill it skipped is one they already have
 and may want to reconcile.
 
+On macOS it also **asks** whether to wrap their `claude` alias for latch (step 3
+below) and does it on a yes, backing the file up first. It skips silently when
+run non-interactively, so if you pipe its output you must still do step 3
+yourself. It never edits a shell profile without being told to.
+
 ### 2. Ask about report delivery
 
 `/turbo` and `/standup` text their final report. Ask the user whether they want
