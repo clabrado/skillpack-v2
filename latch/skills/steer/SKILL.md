@@ -1,6 +1,6 @@
 ---
 name: steer
-description: "Hand this running Claude session over to an autonomous steerer. The steerer latches onto THIS session (via LATCH), watches the live event stream, answers questions Claude raises, and course-corrects when work drifts from the user's core task — until the task is delivered. Default decision engine: `claude -p` pinned to Opus (STEER-01). Use when the user says 'steer this', 'watch this and keep it on track', or wants to walk away while the current task finishes. Requires the session to have been started via the latch-wrapped `claude` command."
+description: "Hand this running Claude session over to an autonomous steerer. The steerer latches onto THIS session (via LATCH), watches the live event stream, answers questions Claude raises, and course-corrects when work drifts from the user's core task — until the task is delivered. The decision engine is Claude itself (`claude -p` pinned to Opus) — no other tool required. Use when the user says 'steer this', 'watch this and keep it on track', or wants to walk away while the current task finishes. Requires the session to have been started via the latch-wrapped `claude` command."
 argument-hint: "[optional: extra goal notes] [--stop] [--status]"
 ---
 
@@ -17,14 +17,20 @@ This works because the session was launched through **latch** (the `claude` comm
 wrapped), which owns the PTY and exposes a localhost control API. The steerer drives that
 API — it is NOT reverse-engineering Remote Control or automating a browser.
 
-**Decision engine (STEER-01, 2026-07-31):** the default is `claude -p` pinned to
-**Opus** — a separate, cost-stripped headless session (~700 input tokens/decision vs
-Grok's ~18-19K) with engine-side `--json-schema` enforcement, real `--resume`
-continuity, and structural engine-error classification. Grok remains available via
-`LATCH_STEER_ENGINE=grok`; any CLI via `LATCH_STEER_CMD` (or the back-compat
-`LATCH_GROK_CMD`). All engines return the same `action`/`message`/`reasoning`/
-`evidence` decision object and all fail LOUD when the engine dies. See `README.md`
-§ "Engine-agnostic decision engine" in the latch repo for the full contract.
+**Decision engine: Claude. Nothing else is needed, and no other tool has to be
+installed.** The steerer runs `claude -p` pinned to **Opus** — a separate,
+cost-stripped headless session (~700 input tokens per decision) with
+schema-enforced output, real `--resume` continuity, and structural
+classification of engine errors. This is the default with no configuration at
+all, and it is the only engine this pack assumes you have.
+
+Other engines exist for people who want them and are strictly opt-in:
+`LATCH_STEER_ENGINE=grok` for Grok, or `LATCH_STEER_ENGINE=cmd` plus
+`LATCH_STEER_CMD` for any other command-line model. **If Grok is unavailable in
+your environment — many workplaces do not permit it — you need do nothing;
+leaving these unset gives you the Claude engine.** Every engine returns the same
+`action`/`message`/`reasoning`/`evidence` decision object and every one fails
+LOUD when it dies rather than silently steering nothing.
 
 **Heterogeneity caveat (be honest if asked):** with the claude engine, the steerer and
 the steered session share a vendor — separation is role + context + pinned Opus tier,
@@ -124,7 +130,8 @@ what it observes and directs.)
 - List/stop: `latch steer --list`, `latch steer --stop <sid>`.
 - The goalpack and decisions are logged under `~/.latch/`. Every inject is audited in
   `~/.latch/audit.jsonl`.
-- Engine selection: `LATCH_STEER_ENGINE=claude|grok|cmd`, model via
+- Engine selection: unset means Claude — that is the supported path. `grok` and
+  `cmd` are opt-in alternatives via `LATCH_STEER_ENGINE`. Model via
   `LATCH_CLAUDE_MODEL` (default opus, pinned per call). Export before `latch run`
   so the knobs are captured into the session's launch env.
 

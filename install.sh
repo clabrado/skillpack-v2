@@ -12,7 +12,7 @@ LATCH_SRC="$ROOT/latch/skills"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
 # Standalone — depend on nothing outside Claude Code.
-SKILLS=(turbo standup readout sid)
+SKILLS=(turbo standup readout sid eclaude)
 # Also in skills/, but DO NOTHING without latch running; installed, and flagged.
 LATCH_SKILLS=(steer drive)
 
@@ -82,5 +82,6 @@ if [ -d "$(dirname "$SRC")/latch" ]; then
   echo "To use it, add to your shell profile:"
   echo "  alias claude='latch run -- claude-stable --dangerously-skip-permissions'"
 fi
-echo "Done. In Claude Code: /turbo, /standup, /readout, /sid"
+echo "Done. In Claude Code: /turbo, /standup, /readout, /sid, /eclaude"
 echo "                      /steer and /drive once latch is wired up."
+echo "                      /eclaude launches windows via bin/eclaude.sh"

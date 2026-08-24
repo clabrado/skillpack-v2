@@ -1,6 +1,6 @@
 # skillpack v2
 
-Four Claude Code skills that work as one loop: **give a goal, walk away, get a
+Seven Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -12,23 +12,23 @@ know" rather than filling a gap with a plausible sentence.
 |---|---|
 | **`/turbo <goal>`** | Sets the goal as a standing directive and works it autonomously — analyse, build, verify, repeat — until every part is genuinely done. For open-ended building. |
 | **`/standup <goal>`** | Same persistence, different rhythm: a fixed **assess → triage → configure → analyze** cycle each pass. For standing something *up* — a service, a box, a pipeline. |
+| **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away *mid-task*, not only at the start. |
 | **`/readout [topic]`** | Six questions, plain English, every claim re-checked this turn. Status, not a log dump. |
+| **`/eclaude [dir]`** | Opens a fresh session in its own window — own context, own terminal, independently watchable. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
-
-Two more are in [`skills/`](skills/) with the rest, but need the supervisor in
-[`latch/`](latch/) actually running to do anything:
-
-| Skill | What it does |
-|---|---|
-| **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away mid-task rather than only at the start. |
 | **`/drive`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
 
-`/steer` is the one that pairs with `/turbo` and `/standup`: those hold a goal,
+`/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
 
-Latch carries its own copies of those two at `latch/skills/`, because
-`latch skills install` links them into place itself. `install.sh` warns if the
-two copies ever drift apart rather than assuming they match.
+**The steerer runs on Claude.** No other model tool is required, and none is
+assumed — the default engine is `claude -p` pinned to Opus, with no
+configuration at all. Grok and other command-line models are opt-in
+alternatives; if your environment does not permit them, leave the settings
+unset and everything works.
+
+`/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
+running. `/turbo`, `/standup`, `/readout` and `/sid` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -41,7 +41,8 @@ cd skillpack-v2
 ./install.sh            # copies into ~/.claude/skills/, never overwrites without asking
 ```
 
-Then in Claude Code: `/turbo`, `/standup`, `/readout`, `/sid`.
+Then in Claude Code: `/turbo`, `/standup`, `/steer`, `/readout`, `/eclaude`,
+`/sid`, `/drive`.
 
 `install.sh` refuses to clobber. If a skill of the same name already exists it
 stops and shows you the difference; move your copy aside yourself.
@@ -129,6 +130,18 @@ be shown a green check that means nothing. Concretely, each one:
 `/turbo` and `/standup` hold their goal across a long session and will not ask
 "should I continue?" once you have set it. That is the point of them. It also
 means you should scope the goal deliberately before you walk away.
+
+## Running latch's tests
+
+```bash
+cd latch && LATCH_NOTIFY=0 PYTHONPATH=. python3 -m pytest test/ -q
+```
+
+116 pass. One — `test_real_machine_config_is_hardened` — asserts a setting in
+*your own* `~/.grok/config.toml` rather than anything in this repo, and will
+fail on any machine that has not disabled Grok's codebase upload. It is a
+standing check on its author's machine, not a test of this code. Either set
+`[harness] disable_codebase_upload = true` in that file, or ignore it.
 
 ## Licence
 

@@ -6,6 +6,7 @@ import signal
 import subprocess
 import sys
 import time
+import shutil
 from pathlib import Path
 
 from .paths import LATCH_HOME, LOGS_DIR, ensure_latch_home
@@ -15,12 +16,33 @@ STEERER = REPO / "client" / "steerer.py"
 STEERERS_DIR = LATCH_HOME / "steerers"
 ZSHRC = Path.home() / ".zshrc"
 
+def _claude_binary() -> str:
+    """Absolute path to the Claude binary this machine actually has.
+
+    Resolved at runtime, never hardcoded: these strings get written into the
+    user's shell profile by `latch alias-on`, and a baked-in path from the
+    author's machine writes a broken alias onto everyone else's.
+
+    claude-stable is a pinned build and wins when present; plain claude is the
+    normal name. Falls back to the bare name so the alias is still meaningful
+    on a machine where neither is on PATH yet.
+    """
+    for name in ("claude-stable", "claude"):
+        found = shutil.which(name)
+        if found:
+            return found
+        candidate = Path.home() / ".local" / "bin" / name
+        if candidate.exists():
+            return str(candidate)
+    return "claude"
+
+
 WRAPPED_ALIAS = (
-    "alias claude='latch run -- /Users/beans/.local/bin/claude-stable "
+    f"alias claude='latch run -- {_claude_binary()} "
     "--dangerously-skip-permissions'"
 )
 BARE_ALIAS = (
-    "alias claude='/Users/beans/.local/bin/claude-stable --dangerously-skip-permissions'"
+    f"alias claude='{_claude_binary()} --dangerously-skip-permissions'"
 )
 
 
