@@ -1,0 +1,581 @@
+#!/usr/bin/env python3
+"""LATCH CLI — Python supervisor (PTY via stdlib; node-pty unavailable on this host)."""
+from __future__ import annotations
+
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+# allow running from repo without install
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from latchlib.paths import TOKEN_PATH, ensure_latch_home  # noqa: E402
+from latchlib.registry import (  # noqa: E402
+    AmbiguousSession,
+    NoSession,
+    format_candidates,
+    format_session_row,
+    list_sessions,
+    resolve_sid,
+)
+from latchlib.token import ensure_token, read_token  # noqa: E402
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if not argv or argv[0] in ("-h", "--help"):
+        print_help()
+        return 0
+
+    cmd = argv[0]
+    if cmd == "run":
+        from latchlib.run import run_supervisor
+
+        name, no_log, profile, rest = parse_run_args(argv[1:])
+        return run_supervisor(rest, name=name, no_log=no_log, profile=profile)
+
+    if cmd == "ls":
+        ensure_latch_home()
+        sessions = list_sessions()
+        if not sessions:
+            print("(no live latch sessions)")
+            return 0
+        print(f"{len(sessions)} live latch session(s):")
+        for s in sessions:
+            print(format_session_row(s))
+        if len(sessions) > 1:
+            print(
+                "note: multiple sessions — always target an exact sid "
+                "(newest is refused when >1 live)",
+                file=sys.stderr,
+            )
+        return 0
+
+    if cmd == "token":
+        ensure_token()
+        print(TOKEN_PATH)
+        return 0
+
+    if cmd == "hooks":
+        from latchlib.hooks_install import install, uninstall
+
+        sub = argv[1] if len(argv) > 1 else "install"
+        return install() if sub == "install" else uninstall()
+
+    if cmd == "skills":
+        from latchlib.skills_install import install, uninstall
+
+        sub = argv[1] if len(argv) > 1 else "install"
+        return install() if sub == "install" else uninstall()
+
+    if cmd in ("alias-on", "alias-off"):
+        from latchlib.steer_launch import alias_off, alias_on, alias_state
+
+        r = alias_on() if cmd == "alias-on" else alias_off()
+        print(json.dumps(r))
+        print(f"alias state: {alias_state()}  (open a new shell / `source ~/.zshrc` to apply)")
+        return 0 if r.get("ok") else 1
+
+    if cmd == "steer":
+        return cmd_steer(argv[1:])
+
+    if cmd == "redirect":
+        # latch redirect [--cwd DIR] [--allow-newest] <sid|name> <text...>
+        # Interrupts the current turn (Esc), then types + submits the new priority.
+        allow = "--allow-newest" in argv
+        cwd = None
+        args = []
+        i = 1
+        while i < len(argv):
+            if argv[i] == "--allow-newest":
+                i += 1
+                continue
+            if argv[i] == "--cwd":
+                i += 1
+                cwd = argv[i] if i < len(argv) else None
+                i += 1
+                continue
+            args.append(argv[i])
+            i += 1
+        if len(args) < 2:
+            print("usage: latch redirect [--cwd DIR] <sid|name> <text...>", file=sys.stderr)
+            return 2
+        selector, text = args[0], " ".join(args[1:])
+        try:
+            sess = resolve_sid(selector, cwd=cwd, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            if isinstance(e, AmbiguousSession):
+                print(format_candidates(e.candidates), file=sys.stderr)
+            return 1
+        r = api(
+            int(sess["port"]),
+            "POST",
+            "/v1/inject",
+            {"mode": "redirect", "data": text, "when": "now", "submit": True},
+        )
+        print(json.dumps({**r, "sid": sess.get("sid")}))
+        return 0 if r.get("accepted") else 1
+
+    if cmd == "tail":
+        mode = "all"
+        if "--raw" in argv:
+            mode = "raw"
+        if "--evt" in argv:
+            mode = "evt"
+        args = [a for a in argv[1:] if not a.startswith("--")]
+        sid = args[0] if args else None
+        allow = "--allow-newest" in argv
+        try:
+            sess = resolve_sid(sid, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            if isinstance(e, AmbiguousSession):
+                print(format_candidates(e.candidates), file=sys.stderr)
+            return 1
+        return sse_tail(int(sess["port"]), mode)
+
+    if cmd == "inject":
+        # latch inject [--allow-newest] [--cwd DIR] [--mode M] [--keys k,k]
+        #              [--no-submit] <sid|name> [text...]
+        # NOTE: there is deliberately NO --force. Destructive payloads are
+        # refused outright (Chris's ruling 2026-08-01); adding an override here
+        # is a regression, and the danger-screen test asserts against it.
+        allow = "--allow-newest" in argv
+        cwd = None
+        mode = "text"
+        keys: list[str] = []
+        submit = True
+        args = []
+        i = 1
+        while i < len(argv):
+            a = argv[i]
+            if a == "--allow-newest":
+                i += 1
+                continue
+            if a == "--no-submit":
+                submit = False
+                i += 1
+                continue
+            if a == "--cwd":
+                i += 1
+                cwd = argv[i] if i < len(argv) else None
+                i += 1
+                continue
+            if a == "--mode":
+                i += 1
+                mode = argv[i] if i < len(argv) else "text"
+                i += 1
+                continue
+            if a == "--keys":
+                i += 1
+                keys = [k.strip() for k in (argv[i] if i < len(argv) else "").split(",") if k.strip()]
+                mode = "keys"
+                i += 1
+                continue
+            args.append(a)
+            i += 1
+        if not args or (mode != "keys" and len(args) < 2):
+            print(
+                "usage: latch inject [--cwd DIR] [--allow-newest] [--mode text|keys|interrupt|redirect]\n"
+                "                    [--keys enter,y,ctrl-c] [--no-submit] <sid|name> [text...]",
+                file=sys.stderr,
+            )
+            return 2
+        selector, text = args[0], " ".join(args[1:])
+        try:
+            sess = resolve_sid(selector, cwd=cwd, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            if isinstance(e, AmbiguousSession):
+                print(format_candidates(e.candidates), file=sys.stderr)
+            return 1
+        # on_deadline=expire for operator CLI injects (STEER-02 ruling E): latch
+        # never interrupts a turn on behalf of a human who explicitly chose
+        # queued text. The item still gets a deadline, so an undelivered inject
+        # becomes a visible, audited `inject_expired` instead of parking
+        # silently forever. Steerer-sourced items opt into `redirect` instead.
+        payload: dict = {
+            "when": "idle",
+            "submit": submit,
+            "mode": mode,
+            "on_deadline": "expire",
+        }
+        if mode == "keys":
+            payload["data"] = keys
+        elif mode == "interrupt":
+            payload.pop("data", None)
+        else:
+            payload["data"] = text
+        r = api(int(sess["port"]), "POST", "/v1/inject", payload)
+
+        # QUEUE-FULL FALLBACK (2026-08-03). A queued inject waits for idle, and a
+        # session that is looping or long-running never goes idle — so the queue
+        # fills and further injects are refused with 409 queue_full. That is
+        # precisely when an operator most needs to reach the session, and the
+        # steerer's own QueuedInjectEscalator (client/steerer.py) only covers
+        # ATTACHED steerers, never a human driving latch by hand. Measured live:
+        # an operator instruction was refused queue_full while a lane was busy,
+        # and the work only landed after reaching for `redirect` manually.
+        # Escalate for them rather than requiring they remember.
+        #
+        # Only for the default text mode: `keys` and `interrupt` have their own
+        # semantics, and silently converting them to a turn-interrupting redirect
+        # would surprise the caller in ways they cannot see.
+        if (
+            not r.get("accepted")
+            and r.get("reason") == "queue_full"
+            and mode not in ("keys", "interrupt")
+        ):
+            r = api(
+                int(sess["port"]),
+                "POST",
+                "/v1/inject",
+                {"mode": "redirect", "data": text, "when": "now", "submit": True},
+            )
+            r["escalated_from"] = "queue_full"
+
+        print(json.dumps({**r, "sid": sess.get("sid"), "name": sess.get("name")}))
+        return 0 if r.get("accepted") else 1
+
+    if cmd == "idle":
+        allow = "--allow-newest" in argv
+        args = [a for a in argv[1:] if a != "--allow-newest"]
+        sid = args[0] if args else None
+        try:
+            sess = resolve_sid(sid, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            if isinstance(e, AmbiguousSession):
+                print(format_candidates(e.candidates), file=sys.stderr)
+            return 1
+        h = api(int(sess["port"]), "GET", "/v1/health")
+        return 0 if h.get("idle") else 1
+
+    if cmd == "health":
+        allow = "--allow-newest" in argv
+        args = [a for a in argv[1:] if a != "--allow-newest"]
+        sid = args[0] if args else None
+        try:
+            sess = resolve_sid(sid, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            if isinstance(e, AmbiguousSession):
+                print(format_candidates(e.candidates), file=sys.stderr)
+            return 1
+        print(json.dumps(api(int(sess["port"]), "GET", "/v1/health"), indent=2))
+        return 0
+
+    print("unknown command:", cmd, file=sys.stderr)
+    print_help()
+    return 2
+
+
+def cmd_steer(argv: list[str]) -> int:
+    """
+    latch steer                 interactive picker → launch steerer (engine: LATCH_STEER_ENGINE, default claude/opus)
+    latch steer <sid|name>      launch on that session
+    latch steer --self          use $LATCH_SID (the /steer skill path)
+    latch steer --list          list running steerers
+    latch steer --stop <sid>    stop a steerer
+    Options: --goal FILE  --cwd DIR  --dry-run  --max-minutes N  --max-steers N
+             --watchdog SECS  --open-prompt TEXT
+             --watchdog SEC  --allow-newest
+    """
+    from latchlib.steer_launch import (
+        default_goalpack,
+        launch_steerer,
+        list_steerers,
+        steerer_running,
+        stop_steerer,
+    )
+
+    if "--list" in argv:
+        rows = list_steerers()
+        if not rows:
+            print("(no running steerers)")
+        for m in rows:
+            # A live PID is NOT proof of supervision (STEER-02): the observed
+            # failure was a steerer process that had stopped deciding while the
+            # lane reported supervised. Print the heartbeat age and say STALE
+            # out loud rather than making the operator infer it.
+            age = m.get("heartbeat_age_s")
+            hb = "never" if age is None else f"{age:.0f}s ago"
+            flag = "\tSUPERVISION STALE" if m.get("stale") else ""
+            print(
+                f"{m['sid']}\tpid={m['pid']}\tname={m.get('name')}\t"
+                f"last_decision={hb}\tlast_action={m.get('last_action')}\t"
+                f"log={m.get('log')}\tstarted={m.get('started_at')}{flag}"
+            )
+        return 0
+
+    if "--stop" in argv:
+        i = argv.index("--stop")
+        sid = argv[i + 1] if i + 1 < len(argv) else None
+        if not sid:
+            print("usage: latch steer --stop <sid>", file=sys.stderr)
+            return 2
+        try:
+            sess = resolve_sid(sid)
+            sid = sess["sid"]
+        except (AmbiguousSession, NoSession):
+            pass  # allow stopping by raw sid even if session already exited
+        print(json.dumps(stop_steerer(sid)))
+        return 0
+
+    # normalize --flag=value into two tokens FIRST — `--goal=/x/g.md` previously
+    # matched neither _opt (exact-flag lookup) nor the unknown-flag check
+    # (which stripped the =value), so it was silently ignored and the steerer
+    # launched with the DEFAULT goalpack while reporting success
+    expanded: list[str] = []
+    for a in argv:
+        if a.startswith("--") and "=" in a:
+            f, v = a.split("=", 1)
+            expanded += [f, v]
+        else:
+            expanded.append(a)
+    argv = expanded
+
+    # option parsing
+    goal = _opt(argv, "--goal")
+    cwd = _opt(argv, "--cwd")
+    dry = "--dry-run" in argv
+    self_mode = "--self" in argv
+    allow = "--allow-newest" in argv
+    extra: list[str] = []
+    _PASSTHROUGH = ("--max-minutes", "--max-steers", "--watchdog", "--open-prompt")
+    for flag in _PASSTHROUGH:
+        v = _opt(argv, flag)
+        if v is not None:
+            extra += [flag, v]
+    if dry:
+        extra.append("--dry-run")
+    # fail loud on flags nobody consumes — a silently-dropped flag (e.g. a typo,
+    # or --open-prompt before it was added here) looks like it worked
+    _known = {"--goal", "--cwd", "--dry-run", "--self", "--allow-newest",
+              "--list", "--stop", *_PASSTHROUGH}
+    unknown = [a for a in argv if a.startswith("--") and a not in _known]
+    if unknown:
+        print(f"unknown flag(s): {' '.join(unknown)}", file=sys.stderr)
+        return 2
+    positional = [
+        a
+        for a in argv
+        if not a.startswith("--")
+        and a not in (goal or "", cwd or "")
+        and argv[argv.index(a) - 1] not in ("--goal", "--cwd", *_PASSTHROUGH)
+    ]
+
+    # resolve target session
+    if self_mode:
+        sid = os.environ.get("LATCH_SID")
+        if not sid:
+            print(
+                "not inside a latch-wrapped session ($LATCH_SID unset).\n"
+                "Start Claude via the wrapped `claude` command (see: latch alias-on).",
+                file=sys.stderr,
+            )
+            return 3
+        try:
+            sess = resolve_sid(sid)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            return 1
+    else:
+        selector = positional[0] if positional else None
+        try:
+            sess = _pick_session(selector, cwd=cwd, allow_newest=allow)
+        except (AmbiguousSession, NoSession) as e:
+            print(e, file=sys.stderr)
+            return 1
+
+    if steerer_running(sess["sid"]) and not dry:
+        print(f"already steering sid={sess['sid']} (latch steer --stop {sess['sid']} to replace)")
+        return 0
+
+    goal_path = Path(goal) if goal else default_goalpack(sess)
+    r = launch_steerer(sess, goal_path, extra_args=extra, dry_run=dry)
+    if r.get("ok"):
+        if dry:
+            print("dry-run argv:", " ".join(r["argv"]))
+        else:
+            print(
+                f"steering sid={sess['sid']} name={sess.get('name')} "
+                f"pid={r['pid']}\n  goal: {goal_path}\n  log:  {r['log']}\n"
+                f"  stop: latch steer --stop {sess['sid']}"
+            )
+        return 0
+    print(json.dumps(r), file=sys.stderr)
+    return 1
+
+
+def _opt(argv: list[str], flag: str):
+    if flag in argv:
+        i = argv.index(flag)
+        if i + 1 < len(argv):
+            return argv[i + 1]
+    return None
+
+
+def _pick_session(selector, *, cwd=None, allow_newest=False):
+    """Resolve a session; if ambiguous and a TTY is present, show a picker."""
+    try:
+        return resolve_sid(selector, cwd=cwd, allow_newest=allow_newest)
+    except AmbiguousSession as e:
+        if not sys.stdin.isatty():
+            raise
+        cands = e.candidates
+        print("Multiple live Claude sessions — choose one to steer:\n", file=sys.stderr)
+        for idx, s in enumerate(cands, 1):
+            print(f"  [{idx}] {format_session_row(s)}", file=sys.stderr)
+        print("", file=sys.stderr)
+        try:
+            choice = input(f"session [1-{len(cands)}] (q to quit): ").strip()
+        except EOFError:
+            raise NoSession("no selection")
+        if choice.lower() in ("q", "quit", ""):
+            raise NoSession("cancelled")
+        try:
+            return cands[int(choice) - 1]
+        except (ValueError, IndexError):
+            raise NoSession(f"invalid choice: {choice}")
+
+
+def parse_run_args(argv: list[str]):
+    name = None
+    no_log = False
+    profile = None
+    rest = []
+    after = False
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if after:
+            rest.append(a)
+            i += 1
+            continue
+        if a == "--":
+            after = True
+            i += 1
+            continue
+        if a == "--name":
+            i += 1
+            name = argv[i] if i < len(argv) else None
+            i += 1
+            continue
+        if a == "--no-log":
+            no_log = True
+            i += 1
+            continue
+        if a == "--profile":
+            i += 1
+            profile = argv[i] if i < len(argv) else None
+            i += 1
+            continue
+        rest.append(a)
+        after = True
+        i += 1
+    return name, no_log, profile, rest
+
+
+def print_help():
+    print(
+        """latch — Claude Code session supervisor
+
+Usage:
+  latch run [--name N] [--no-log] [--profile P] -- claude [args...]
+                                       # --profile grok-build: opengrok-safe injector rules
+  latch ls
+  latch steer [<sid|name>]            # launch steerer (picker if omitted)
+  latch steer --self [--goal FILE]    # attach to THIS session ($LATCH_SID) — used by /steer skill
+  latch steer --list | --stop <sid>
+  latch tail <sid> [--raw|--evt]
+  latch inject [--cwd DIR] <sid|name> <text...>     # queued until idle
+  latch redirect [--cwd DIR] <sid|name> <text...>   # interrupt turn + new priority NOW
+  latch idle <sid>
+  latch health <sid>
+  latch hooks install|uninstall
+  latch skills install|uninstall     # symlink bundled skills/ (steer) into ~/.claude/skills
+  latch alias-on | alias-off         # wrap/unwrap the global `claude` alias
+  latch token
+
+Multi-session (this machine often has many Claudes):
+  - Each `latch run` gets a unique sid + port; registry: ~/.latch/sessions/
+  - Prefer exact sid (printed on start banner). Name alone is OK only if unique.
+  - Bare 'newest' is REFUSED when more than one session is live
+    (override only with --allow-newest).
+  - Unwrapped `claude` sessions are invisible to latch.
+
+Sessions must be started via `latch run` to be steerable.
+Remote Control continues to work under the PTY wrap if enabled.
+"""
+    )
+
+
+def api(port: int, method: str, path: str, body=None):
+    token = read_token()
+    data = None if body is None else json.dumps(body).encode()
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}{path}",
+        data=data,
+        method=method,
+        headers={
+            "Authorization": f"Bearer {token}",
+            **({"Content-Type": "application/json"} if data else {}),
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            raw = resp.read().decode()
+            return json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as e:
+        raw = e.read().decode()
+        try:
+            return json.loads(raw)
+        except Exception:
+            return {"error": raw, "status": e.code}
+
+
+def sse_tail(port: int, mode: str) -> int:
+    token = read_token()
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}/v1/stream?replay=50",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    import base64
+
+    with urllib.request.urlopen(req, timeout=None) as resp:
+        buf = ""
+        while True:
+            chunk = resp.read(4096)
+            if not chunk:
+                break
+            buf += chunk.decode("utf-8", errors="replace")
+            while "\n\n" in buf:
+                block, buf = buf.split("\n\n", 1)
+                for line in block.split("\n"):
+                    if not line.startswith("data: "):
+                        continue
+                    try:
+                        frame = json.loads(line[6:])
+                    except json.JSONDecodeError:
+                        continue
+                    if mode == "raw" and frame.get("t") != "out":
+                        continue
+                    if mode == "evt" and frame.get("t") != "evt":
+                        continue
+                    if frame.get("t") == "out":
+                        sys.stdout.buffer.write(base64.b64decode(frame.get("b64") or ""))
+                        sys.stdout.buffer.flush()
+                    else:
+                        print(json.dumps(frame))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

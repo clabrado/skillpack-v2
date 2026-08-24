@@ -15,6 +15,9 @@ know" rather than filling a gap with a plausible sentence.
 | **`/readout [topic]`** | Six questions, plain English, every claim re-checked this turn. Status, not a log dump. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 
+Plus **[`latch/`](latch/)** — the terminal supervisor that makes attaching to a
+running session possible at all.
+
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
 
@@ -62,28 +65,38 @@ That gets you the id and the transcript path, which is enough to *read* a
 session while it runs.
 
 **To also send input into a running session from outside it**, the session has
-to have been launched under a supervisor that owns its terminal. The setup here
-uses `latch`, a terminal supervisor that owns the session's pseudo-terminal and
-accepts input into it from outside. It is a separate project of the author's and
-is not currently published, so treat the alias below as the *shape* of the
-solution rather than something you can install today:
+to be launched under something that owns its terminal. That tool is included in
+this repo, under [`latch/`](latch/) — a terminal supervisor that holds the
+session's pseudo-terminal, streams its events, and accepts typed input from
+another window.
+
+Wrap your agent binary in a shell alias so every session is attachable by
+default:
 
 ```bash
 alias claude='latch run -- claude-stable --dangerously-skip-permissions'
-```
-
-The same shape works for other agent CLIs — wrap the binary, keep the name:
-
-```bash
 alias grok='latch run -- grok'
 ```
 
-**This is the only part of the pack with an outside dependency, and it is
-optional.** Without it: `/sid` works, `/turbo`, `/standup` and `/readout` all
-work — you simply can't type into a session from another window. If you use
-`tmux`, `zellij`, or `screen`, wrapping the launch the same way gives you the
-same ability with tools you already have. Nothing in the pack calls `latch`
-directly.
+Then from anywhere:
+
+```bash
+latch ls                       # every live session: id, name, cwd, pid
+latch inject <sid> "<text>"    # type into that session
+latch attach <sid>             # watch it
+```
+
+**It is optional.** Without it `/sid`, `/turbo`, `/standup` and `/readout` all
+work — you simply cannot type into a session from another window. Nothing in the
+four skills calls `latch` directly.
+
+Latch sends notifications the same way the skills do, and by the same rule:
+
+```bash
+export LATCH_NOTIFY_TO="+15551234567"                 # unset = notifications skipped, and said to be
+export LATCH_NOTIFY_BIN="/opt/homebrew/bin/imsg"      # optional; this is the default
+export LATCH_NOTIFY=0                                 # suppress entirely
+```
 
 Note `--dangerously-skip-permissions` in that alias: it lets a session act
 without stopping to ask. It suits an unattended run you are supervising from

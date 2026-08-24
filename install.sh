@@ -44,4 +44,11 @@ if [ -z "${SKILLPACK_NOTIFY_TO:-}" ]; then
 else
   echo "Report delivery is configured: SKILLPACK_NOTIFY_TO is set."
 fi
+if [ -d "$(dirname "$SRC")/latch" ]; then
+  echo
+  echo "latch/ is included in this repo but is NOT installed by this script — it"
+  echo "is optional and it owns your terminal, so wiring it in is your decision."
+  echo "To use it, add to your shell profile:"
+  echo "  alias claude='latch run -- claude-stable --dangerously-skip-permissions'"
+fi
 echo "Done. In Claude Code: /turbo, /standup, /readout, /sid"

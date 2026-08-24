@@ -1,0 +1,433 @@
+<title>/steer — decision routing architecture</title>
+<style>
+  :root {
+    --paper:#e7eaef; --grid:#d5d9e2; --sheet:#f5f6f9; --sheet2:#fdfdfe;
+    --ink:#161b24; --ink-soft:#4a5160; --ink-faint:#7b8492;
+    --line:#c7ccd6; --line-strong:#9aa2b0;
+    --accent:#2c44c4; --accent-soft:#e2e6fb; --accent-ink:#2438a8;
+    --authority:#a76c14; --authority-soft:#f2e9d6;
+    --v-deny:#bd3a2e; --v-seal:#7739df; --v-approve:#bf7710; --v-auto:#2a8a60;
+    --deny-soft:#f5dcd8; --seal-soft:#ece0fb; --approve-soft:#f6e7cc; --auto-soft:#d8efe4;
+    --radius:7px; --maxw:1080px;
+    --font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --font-sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#0b0e15; --grid:#141a25; --sheet:#131824; --sheet2:#1a2130;
+      --ink:#e6eaf1; --ink-soft:#a2abbb; --ink-faint:#6d7788;
+      --line:#29303f; --line-strong:#3d4759;
+      --accent:#8298ff; --accent-soft:#1c2540; --accent-ink:#a9b8ff;
+      --authority:#d6a340; --authority-soft:#272113;
+      --v-deny:#e7685b; --v-seal:#a781f0; --v-approve:#de9f39; --v-auto:#4dbc89;
+      --deny-soft:#2c1815; --seal-soft:#201638; --approve-soft:#2a1f0d; --auto-soft:#12271d;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#e7eaef; --grid:#d5d9e2; --sheet:#f5f6f9; --sheet2:#fdfdfe;
+    --ink:#161b24; --ink-soft:#4a5160; --ink-faint:#7b8492;
+    --line:#c7ccd6; --line-strong:#9aa2b0;
+    --accent:#2c44c4; --accent-soft:#e2e6fb; --accent-ink:#2438a8;
+    --authority:#a76c14; --authority-soft:#f2e9d6;
+    --v-deny:#bd3a2e; --v-seal:#7739df; --v-approve:#bf7710; --v-auto:#2a8a60;
+    --deny-soft:#f5dcd8; --seal-soft:#ece0fb; --approve-soft:#f6e7cc; --auto-soft:#d8efe4;
+  }
+  :root[data-theme="dark"] {
+    --paper:#0b0e15; --grid:#141a25; --sheet:#131824; --sheet2:#1a2130;
+    --ink:#e6eaf1; --ink-soft:#a2abbb; --ink-faint:#6d7788;
+    --line:#29303f; --line-strong:#3d4759;
+    --accent:#8298ff; --accent-soft:#1c2540; --accent-ink:#a9b8ff;
+    --authority:#d6a340; --authority-soft:#272113;
+    --v-deny:#e7685b; --v-seal:#a781f0; --v-approve:#de9f39; --v-auto:#4dbc89;
+    --deny-soft:#2c1815; --seal-soft:#201638; --approve-soft:#2a1f0d; --auto-soft:#12271d;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; color:var(--ink); background:var(--paper);
+    font-family:var(--font-sans); line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:clamp(20px,4vw,52px) clamp(16px,4vw,32px) 72px; }
+
+  .mono { font-family:var(--font-mono); }
+  .eyebrow {
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--accent-ink); font-weight:600;
+  }
+
+  /* ---- header ---- */
+  header { margin-bottom:34px; }
+  .kicker {
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft); border:1px solid var(--line); background:var(--sheet);
+    padding:5px 10px; border-radius:100px; margin-bottom:18px;
+  }
+  .kicker .dot { width:7px; height:7px; border-radius:50%; background:var(--v-auto); }
+  h1 {
+    font-family:var(--font-mono); font-weight:600;
+    font-size:clamp(28px,6vw,50px); line-height:1.02; letter-spacing:-.015em;
+    margin:0 0 14px; text-wrap:balance;
+  }
+  h1 .sub { color:var(--ink-faint); font-weight:400; }
+  .lede { font-size:clamp(15px,2.4vw,17.5px); color:var(--ink-soft); max-width:64ch; margin:0 0 20px; }
+  .statusbar { display:flex; flex-wrap:wrap; gap:8px; }
+  .stat {
+    font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);
+    background:var(--sheet); border:1px solid var(--line); border-radius:6px; padding:6px 11px;
+  }
+  .stat b { color:var(--ink); font-weight:600; }
+  .stat.warn { border-color:var(--v-approve); color:var(--v-approve); }
+  .stat.warn b { color:var(--v-approve); }
+
+  /* ---- section scaffolding ---- */
+  section { margin-top:46px; }
+  .sheet-head { display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap; }
+  .sheet-no { font-family:var(--font-mono); font-size:12px; color:var(--accent-ink); letter-spacing:.14em; }
+  h2 { font-family:var(--font-mono); font-weight:600; font-size:clamp(18px,3vw,23px); margin:0; letter-spacing:-.01em; }
+  .sheet-note { color:var(--ink-soft); font-size:14.5px; margin:2px 0 22px; max-width:72ch; }
+
+  /* ---- legend ---- */
+  .legend { display:flex; flex-wrap:wrap; gap:10px 20px; padding:14px 16px; background:var(--sheet);
+    border:1px solid var(--line); border-radius:var(--radius); margin-bottom:8px; }
+  .legend .item { display:flex; align-items:center; gap:9px; font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); }
+  .swatch { width:26px; height:16px; border-radius:4px; flex:none; }
+  .sw-built { border:1.5px solid var(--line-strong); background:var(--sheet2); }
+  .sw-gate { border:1.5px dashed var(--accent); background:var(--accent-soft); }
+  .sw-designed { border:1.5px dashed var(--line-strong); background:repeating-linear-gradient(45deg,transparent,transparent 4px,var(--line) 4px,var(--line) 5px); opacity:.85; }
+  .sw-dropped { border:1.5px dotted var(--v-approve); background:var(--approve-soft); }
+
+  /* ---- layer stack (loop) ---- */
+  .stack-caption { font-family:var(--font-mono); font-size:11.5px; color:var(--ink-soft); margin:0 0 14px;
+    display:flex; gap:16px; flex-wrap:wrap; }
+  .stack-caption b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-direction:column; gap:9px; }
+  .layer { border:1px solid var(--line); border-radius:var(--radius); background:var(--sheet);
+    padding:13px 15px; display:grid; grid-template-columns:minmax(190px,240px) 1fr; gap:14px 18px; align-items:start; }
+  .layer .head2 { display:flex; flex-direction:column; gap:3px; }
+  .layer .ltag { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); }
+  .layer .lname { font-family:var(--font-mono); font-weight:600; font-size:15px; letter-spacing:-.01em; }
+  .layer .lrole { font-size:12px; color:var(--ink-soft); line-height:1.4; }
+  .layer .lchips { display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start; }
+  .layer .lchips .chip { background:var(--sheet2); }
+  .layer.subject { border:2px solid var(--accent); background:var(--accent-soft); }
+  .layer.subject .lname { color:var(--accent-ink); }
+  .layer.subject .ltag { color:var(--accent-ink); }
+  .layer.sovereign { border-color:var(--authority); background:var(--authority-soft); }
+  .layer.sovereign .ltag, .layer.sovereign .lname { color:var(--authority); }
+  .layer.context { opacity:.92; }
+  .youhere { font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em;
+    color:#fff; background:var(--accent); padding:2px 8px; border-radius:100px; white-space:nowrap; align-self:center; }
+  .flowdir { display:flex; align-items:center; justify-content:center; gap:7px; padding:3px 0;
+    font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); letter-spacing:.05em; }
+  .flowdir .ar { color:var(--accent); font-weight:600; }
+  @media (max-width:600px){ .layer { grid-template-columns:1fr; } .youhere { align-self:start; } }
+
+  /* ---- setup cards (per-machine) ---- */
+  .setups { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .setup { border:1.5px solid var(--line-strong); background:var(--sheet2); border-radius:var(--radius);
+    padding:14px 15px; display:flex; flex-direction:column; gap:9px; }
+  .setup.live { border-color:var(--v-auto); }
+  .setup.designed { border-style:dashed; border-color:var(--line-strong); opacity:.82;
+    background:repeating-linear-gradient(45deg,var(--sheet2),var(--sheet2) 7px,var(--sheet) 7px,var(--sheet) 8px); }
+  .setup.dropped { border-style:dotted; border-color:var(--v-approve); background:var(--approve-soft); }
+  .setup .sh { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .setup .m { font-family:var(--font-mono); font-weight:600; font-size:14px; letter-spacing:-.01em; }
+  .setup .path { display:flex; flex-direction:column; gap:5px; }
+  .setup .hop { font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:7px; }
+  .setup .hop .k { color:var(--ink); font-weight:600; }
+  .setup .arrow { color:var(--accent); font-weight:600; }
+  .setup .desc { font-size:12px; color:var(--ink-soft); line-height:1.42; }
+  .tag-live { font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; padding:2px 8px; border-radius:100px; color:var(--v-auto); background:var(--auto-soft); border:1px solid var(--v-auto); white-space:nowrap; }
+  .tag-designed { font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; padding:2px 8px; border-radius:100px; color:var(--ink-faint); background:var(--sheet); border:1px dashed var(--line-strong); white-space:nowrap; }
+  .tag-dropped { font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; padding:2px 8px; border-radius:100px; color:var(--v-approve); background:var(--approve-soft); border:1px dotted var(--v-approve); white-space:nowrap; }
+
+  /* ---- flow / ladder ---- */
+  .flow { display:flex; flex-direction:column; gap:0; margin-left:2px; }
+  .step { position:relative; padding:0 0 20px 46px; }
+  .step::before { content:""; position:absolute; left:15px; top:6px; bottom:-6px; width:2px; background:var(--line); }
+  .step:last-child::before { display:none; }
+  .step .marker {
+    position:absolute; left:0; top:0; width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:12px; font-weight:600;
+    background:var(--sheet2); border:2px solid var(--line-strong); color:var(--ink); z-index:1;
+  }
+  .step.gate .marker { border-color:var(--accent); color:var(--accent-ink); }
+  .step.cloud .marker { border-color:var(--v-seal); color:var(--v-seal); }
+  .step .card { background:var(--sheet); border:1px solid var(--line); border-radius:var(--radius); padding:13px 15px; }
+  .step .card h3 { margin:0 0 3px; font-family:var(--font-mono); font-size:14px; font-weight:600; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+  .step .card p { margin:0; font-size:13px; color:var(--ink-soft); }
+  .step .card p code, .sheet-note code, .desc code { font-family:var(--font-mono); font-size:12px; background:var(--sheet2); border:1px solid var(--line); border-radius:4px; padding:0 4px; color:var(--ink); }
+  .free { font-family:var(--font-mono); font-size:10.5px; color:var(--v-auto); border:1px solid var(--v-auto); background:var(--auto-soft); border-radius:4px; padding:1px 6px; letter-spacing:.03em; }
+
+  .ladder { display:flex; flex-direction:column; gap:7px; margin-top:11px; }
+  .rung { display:grid; grid-template-columns:1fr auto; gap:11px; align-items:center;
+    background:var(--sheet2); border:1px solid var(--line); border-radius:5px; padding:8px 11px; }
+  .rung .desc { font-size:12.5px; color:var(--ink-soft); }
+  .rung .desc b { color:var(--ink); font-weight:600; font-family:var(--font-mono); font-size:12px; }
+  .rung .out { font-family:var(--font-mono); font-size:10px; letter-spacing:.03em; padding:2px 7px; border-radius:100px; white-space:nowrap; }
+  .out.esc { color:var(--v-seal); background:var(--seal-soft); border:1px solid var(--v-seal); }
+  .out.wait { color:var(--v-auto); background:var(--auto-soft); border:1px solid var(--v-auto); }
+
+  .verdicts { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:12px; }
+  .verdict { border-radius:6px; padding:11px 13px; border:1.5px solid; }
+  .verdict .v { font-family:var(--font-mono); font-weight:600; font-size:13.5px; margin-bottom:2px; }
+  .verdict .m { font-size:11.5px; color:var(--ink-soft); line-height:1.4; }
+  .verdict.auto { border-color:var(--v-auto); background:var(--auto-soft); } .verdict.auto .v { color:var(--v-auto); }
+  .verdict.act { border-color:var(--accent); background:var(--accent-soft); } .verdict.act .v { color:var(--accent-ink); }
+  .verdict.term { border-color:var(--v-approve); background:var(--approve-soft); } .verdict.term .v { color:var(--v-approve); }
+
+  /* ---- inventory table ---- */
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); }
+  table { border-collapse:collapse; width:100%; min-width:560px; font-size:13px; }
+  thead th { font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    text-align:left; color:var(--ink-faint); padding:11px 14px; background:var(--sheet); border-bottom:1px solid var(--line-strong); }
+  tbody td { padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td .cname { font-family:var(--font-mono); font-weight:600; color:var(--ink); }
+  .badge { font-family:var(--font-mono); font-size:10.5px; padding:2px 8px; border-radius:100px; white-space:nowrap; display:inline-block; }
+  .badge.b { color:var(--v-auto); background:var(--auto-soft); border:1px solid var(--v-auto); }
+  .badge.g { color:var(--accent-ink); background:var(--accent-soft); border:1px solid var(--accent); }
+  .badge.s { color:var(--ink-faint); background:var(--sheet); border:1px dashed var(--line-strong); }
+  .badge.d { color:var(--v-approve); background:var(--approve-soft); border:1px dotted var(--v-approve); }
+
+  /* ---- closing note ---- */
+  .note { margin-top:40px; border:1px solid var(--line); border-left:3px solid var(--accent); background:var(--sheet);
+    border-radius:var(--radius); padding:16px 18px; }
+  .note h3 { margin:0 0 8px; font-family:var(--font-mono); font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--accent-ink); }
+  .note p { margin:0 0 9px; font-size:13.5px; color:var(--ink-soft); }
+  .note p:last-child { margin-bottom:0; }
+  .note b { color:var(--ink); }
+  .note.rec { border-left-color:var(--v-auto); }
+  .note.rec h3 { color:var(--v-auto); }
+  footer { margin-top:34px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); text-align:center; letter-spacing:.03em; }
+
+  a:focus-visible, [tabindex]:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (max-width:560px){
+    .rung { grid-template-columns:1fr; }
+    .rung .out { justify-self:start; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker"><span class="dot"></span>As-documented · 2026-07-18 · Mini → cloud · MacBook Pro → local</div>
+    <h1>/steer <span class="sub">/ decision routing</span></h1>
+    <p class="lede">How an autonomous steering decision is routed: a free on-box heuristic filter (the <b>pre-gate</b>) removes obvious no-ops, and every real judgment escalates to one LLM engine — <b>cloud Grok on the Mac Mini, local rtx4080 on the MacBook Pro</b>. Solid nodes are built and in use; hatched is designed-not-built; dotted was floated and dropped.</p>
+    <div class="statusbar">
+      <span class="stat"><b>Tier 0</b> · pre-gate filters ~63% free</span>
+      <span class="stat"><b>Mini</b> → cloud Grok 4.5</span>
+      <span class="stat"><b>MacBook Pro</b> → local rtx4080</span>
+      <span class="stat warn"><b>quota fallback</b> · designed, not built</span>
+    </div>
+  </header>
+
+  <!-- LEGEND -->
+  <div class="legend" role="img" aria-label="Legend for node states">
+    <span class="item"><span class="swatch sw-built"></span>Built &amp; in use</span>
+    <span class="item"><span class="swatch sw-gate"></span>The pre-gate — the filter every decision passes</span>
+    <span class="item"><span class="swatch sw-designed"></span>Designed, not built (quota fallback)</span>
+    <span class="item"><span class="swatch sw-dropped"></span>Floated &amp; dropped (never built)</span>
+  </div>
+
+  <!-- SHEET 00 — BIGGER PICTURE -->
+  <section>
+    <div class="sheet-head">
+      <span class="sheet-no">SHEET 00</span>
+      <h2>The supervision loop — where /steer sits</h2>
+    </div>
+    <p class="sheet-note">/steer is <em>external</em> supervision. A goalpack fixes the user's intent; a detached steerer watches a latched worker session's live event stream and injects course-corrections back into it — until the task is delivered. The steerer is <b>engine-agnostic</b>: the decision engine behind it is swappable (<code>LATCH_GROK_CMD</code>), which is exactly what makes the same loop run cloud on one machine and local on another.</p>
+    <div class="stack-caption">
+      <span><span class="ar">↓</span> <b>Intent</b> flows down (goalpack → steerer)</span>
+      <span><span class="ar">↑</span> <b>Live events</b> flow up — the worker never judges itself</span>
+    </div>
+    <div class="stack">
+      <div class="layer sovereign">
+        <div class="head2">
+          <span class="ltag">Intent · the allegiance</span>
+          <span class="lname">User + goalpack</span>
+          <span class="lrole">The core objective, definition of done, and drift signals. The steerer serves this above the worker's momentary choices.</span>
+        </div>
+        <div class="lchips">
+          <span class="chip">goal + constraints</span>
+          <span class="chip">definition of done</span>
+          <span class="chip">drift signals</span>
+        </div>
+      </div>
+
+      <div class="flowdir"><span class="ar">↓</span> defines intent &nbsp;·&nbsp; terminal state (done/blocked) <span class="ar">↑</span></div>
+
+      <div class="layer subject">
+        <div class="head2">
+          <span class="ltag">Supervisor · the decision loop</span>
+          <span class="lname">Steerer</span>
+          <span class="lrole">Runs on the machine that launched it. Observes events, decides wait/steer/redirect/done/blocked, injects via the latch HTTP API. Two-tier decision path — detailed below.</span>
+        </div>
+        <div class="lchips" style="align-items:center;">
+          <span class="youhere">◆ this document</span>
+          <span class="chip rev">pre-gate (Tier 0)</span>
+          <span class="chip rev">engine (Tier 1)</span>
+          <span class="chip">SteerGate cadence</span>
+        </div>
+      </div>
+
+      <div class="flowdir"><span class="ar">↓</span> inject: steer / redirect &nbsp;·&nbsp; prompts · tool use · turn boundaries <span class="ar">↑</span></div>
+
+      <div class="layer context">
+        <div class="head2">
+          <span class="ltag">Worker · the latched session</span>
+          <span class="lname">Claude Code / opengrok</span>
+          <span class="lrole">Does the actual task under a PTY wrap. Its live events are what the steerer observes; injects arrive as if typed. It never decides whether it's on-track — that's the steerer's job.</span>
+        </div>
+        <div class="lchips">
+          <span class="chip">latch run — PTY owner</span>
+          <span class="chip">hooks + screen tail</span>
+          <span class="chip">human keystrokes win 10s</span>
+        </div>
+      </div>
+    </div>
+    <p class="door-caption" style="color:var(--ink-faint);font-family:var(--font-mono);font-size:11px;margin-top:14px;">The loop is closed: worker events → steerer decision → inject → worker acts → more events. It runs until <span class="mono">done</span>/<span class="mono">blocked</span> or the user stops it.</p>
+  </section>
+
+  <!-- SHEET 01 — PER-MACHINE ROUTING -->
+  <section>
+    <div class="sheet-head">
+      <span class="sheet-no">SHEET 01</span>
+      <h2>Where each tier runs — per machine</h2>
+    </div>
+    <p class="sheet-note">The pre-gate is <b>library code inside the steerer process</b>, not a shared service — it runs on whatever machine hosts the session. The Mini and the MacBook Pro are independent latch installs with the same pre-gate but different Tier-1 targets. Two setups are live; two are not.</p>
+
+    <div class="setups">
+      <div class="setup live">
+        <div class="sh"><span class="m">Mac Mini</span><span class="tag-live">LIVE · verified</span></div>
+        <div class="path">
+          <span class="hop"><span class="k">Tier 0</span> pre-gate · on the Mini <span class="free">free</span></span>
+          <span class="hop"><span class="arrow">↓ escalate</span></span>
+          <span class="hop"><span class="k">Tier 1</span> Cloud Grok 4.5</span>
+        </div>
+        <span class="desc">No <code>LATCH_GROK_CMD</code> set → default cloud engine (SuperGrok pool). Verified live 2026-07-18: pre-gate ran here, escalations went to cloud.</span>
+      </div>
+
+      <div class="setup live">
+        <div class="sh"><span class="m">MacBook Pro</span><span class="tag-live">LIVE · as reported</span></div>
+        <div class="path">
+          <span class="hop"><span class="k">Tier 0</span> pre-gate · on the MacBook <span class="free">free</span></span>
+          <span class="hop"><span class="arrow">↓ escalate</span></span>
+          <span class="hop"><span class="k">Tier 1</span> Local rtx4080 · gpt-oss:20b</span>
+        </div>
+        <span class="desc"><code>LATCH_GROK_CMD='opencode run'</code> → opencode → rtx4080. Zero cloud, zero marginal cost. Config per Chris 2026-07-17 (not re-verified from the Mini).</span>
+      </div>
+
+      <div class="setup designed">
+        <div class="sh"><span class="m">Quota fallback</span><span class="tag-designed">DESIGNED · not built</span></div>
+        <div class="path">
+          <span class="hop"><span class="k">Tier 1</span> Cloud Grok (primary)</span>
+          <span class="hop"><span class="arrow">↓ on 402 / quota out</span></span>
+          <span class="hop"><span class="k">fallback</span> local rtx4080 · tightened mandate</span>
+        </div>
+        <span class="desc">The one improvement worth making for the Mini: when cloud is exhausted, degrade to local (bias to <code>wait</code>/<code>blocked</code>) instead of going blind. Steerer already classifies 402/401/429/5xx.</span>
+      </div>
+
+      <div class="setup dropped">
+        <div class="sh"><span class="m">Three-tier judge split</span><span class="tag-dropped">FLOATED · dropped</span></div>
+        <div class="path">
+          <span class="hop"><span class="k">Tier 0</span> pre-gate (free)</span>
+          <span class="hop"><span class="arrow">↓</span> easy → local · hard → cloud</span>
+          <span class="hop"><span class="k">split</span> local judges easy, cloud judges hard</span>
+        </div>
+        <span class="desc">Floated 2026-07-17, never built. Redundant on the Mini: the model-free pre-gate already owns the easy tier for free, so a local judge would only ever get the hard calls it's weakest at.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 02 — DECISION FLOW -->
+  <section>
+    <div class="sheet-head">
+      <span class="sheet-no">SHEET 02</span>
+      <h2>Inside one decision</h2>
+    </div>
+    <p class="sheet-note">How a single steering decision moves through the two tiers. The pre-gate is a fixed heuristic ladder — the first condition that fires escalates; if none do, it auto-waits for free. Only escalated decisions reach the LLM, which returns one schema-constrained verdict.</p>
+
+    <div class="flow">
+      <div class="step gate">
+        <span class="marker">0</span>
+        <div class="card">
+          <h3>Pre-gate — local, model-free <span class="free">no LLM · free</span></h3>
+          <p>A pure Python heuristic (<code>_pregate_escalate</code>). It can <b>only ever choose <code>wait</code></b> — never a real steer — so it is structurally incapable of a bad intervention. Validated against 237 real logged decisions: escalates 100% of actions and turn boundaries, skips ~63% of calls (clean mid-work waits).</p>
+          <div class="ladder">
+            <div class="rung"><span class="desc"><b>Turn boundary / idle</b> — worker finished a turn, needs direction.</span><span class="out esc">ESCALATE</span></div>
+            <div class="rung"><span class="desc"><b>Notification / permission pending</b> — something is waiting on an answer.</span><span class="out esc">ESCALATE</span></div>
+            <div class="rung"><span class="desc"><b>Tool error / traceback</b> — an error signal in the events.</span><span class="out esc">ESCALATE</span></div>
+            <div class="rung"><span class="desc"><b>Drift-signal keyword</b> — a goalpack drift term appears in the events.</span><span class="out esc">ESCALATE</span></div>
+            <div class="rung"><span class="desc"><b>Stall</b> — same tool call repeated ≥3×.</span><span class="out esc">ESCALATE</span></div>
+            <div class="rung"><span class="desc"><b>Clean mid-work</b> — none of the above; worker is progressing.</span><span class="out wait">AUTO-WAIT</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step cloud">
+        <span class="marker">1</span>
+        <div class="card">
+          <h3>Engine — one LLM judgment <span class="mono" style="color:var(--ink-faint);font-size:11px;">cloud Grok · or local via LATCH_GROK_CMD</span></h3>
+          <p>Escalated decisions get a schema-constrained call (<code>{action, message, reasoning, evidence}</code>). A continuing session (<code>--session-id</code>/<code>--resume</code>) gives the engine its own memory across the run. On the Mini this is cloud Grok 4.5; on the MacBook Pro it's local rtx4080. The engine returns exactly one verdict:</p>
+          <div class="verdicts">
+            <div class="verdict auto"><div class="v">wait</div><div class="m">Let the worker keep going. No inject.</div></div>
+            <div class="verdict act"><div class="v">steer</div><div class="m">Type a new prompt at the next idle point.</div></div>
+            <div class="verdict act"><div class="v">redirect</div><div class="m">Interrupt the current turn, re-prioritize now.</div></div>
+            <div class="verdict term"><div class="v">done</div><div class="m">Objective met. End the loop, notify.</div></div>
+            <div class="verdict term"><div class="v">blocked</div><div class="m">Stuck on an external dependency. Notify.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 03 — INVENTORY -->
+  <section>
+    <div class="sheet-head">
+      <span class="sheet-no">SHEET 03</span>
+      <h2>Component inventory</h2>
+    </div>
+    <p class="sheet-note">The routing machinery, by build state. All in <span class="mono">client/steerer.py</span> unless noted.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Role</th><th>State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="cname">pre-gate</span></td><td>Tier-0 model-free filter; auto-waits obvious no-ops, escalates the rest. Can only <code>wait</code>.</td><td><span class="badge b">built · 237-decision validated</span></td></tr>
+          <tr><td><span class="cname">SteerGate</span></td><td>Materiality-gated cadence — decides <em>when</em> a decision is even considered.</td><td><span class="badge b">built</span></td></tr>
+          <tr><td><span class="cname">GrokSession</span></td><td>Continuing engine conversation (<code>--session-id</code>/<code>--resume</code>) for real cross-turn memory.</td><td><span class="badge b">built</span></td></tr>
+          <tr><td><span class="cname">LATCH_GROK_CMD</span></td><td>Engine override — swaps Tier-1 wholesale to any CLI (e.g. <code>opencode run</code> → local).</td><td><span class="badge b">built</span></td></tr>
+          <tr><td><span class="cname">cloud Grok 4.5</span></td><td>Default Tier-1 engine (SuperGrok pool). The Mini's judgment engine.</td><td><span class="badge b">in use · Mini</span></td></tr>
+          <tr><td><span class="cname">local rtx4080 engine</span></td><td>gpt-oss:20b via opencode. The MacBook Pro's Tier-1 engine.</td><td><span class="badge g">in use · MacBook Pro</span></td></tr>
+          <tr><td><span class="cname">cortex-recall annotation</span></td><td>Optional citation on the pre-gate reason string. Never changes the decision.</td><td><span class="badge s">built · off by default</span></td></tr>
+          <tr><td><span class="cname">quota fallback</span></td><td>Cloud-primary → local on engine failure, with a tightened degraded mandate.</td><td><span class="badge s">designed · not built</span></td></tr>
+          <tr><td><span class="cname">three-tier judge split</span></td><td>Local judges easy decisions, cloud judges hard ones.</td><td><span class="badge d">floated · dropped</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="note">
+    <h3>What this drawing is honest about</h3>
+    <p>The <b>Mac Mini path</b> (pre-gate → cloud Grok) was verified live on 2026-07-18: the pre-gate logged <span class="mono">[pregate summary mode=on]</span> here and no <code>LATCH_GROK_CMD</code> override is set, so Tier-1 is cloud. That is real and confirmed from this machine.</p>
+    <p>The <b>MacBook Pro path</b> (pre-gate → local rtx4080) is recorded as Chris configured it on 2026-07-17 — it was <em>not</em> re-verified from the Mini for this document. The pre-gate being model-free, the ~63% filter rate, and the engine-swap mechanism are all read directly from <span class="mono">client/steerer.py</span>.</p>
+    <p>The <b>quota fallback</b> is designed only — no code exists yet. The <b>three-tier judge split</b> was floated once and dropped; it is drawn dotted precisely so no one mistakes it for something that runs.</p>
+  </div>
+
+  <div class="note rec">
+    <h3>Standing recommendation — Mac Mini</h3>
+    <p><b>Keep the current setup. Do not add gpt-oss:20b as a judgment tier here.</b> The pre-gate already skims every easy decision for free, so a local-model tier would be handed only the hard calls it is weakest at — which is exactly why "too weak to judge" is decisive on the Mini specifically.</p>
+    <p>"Cloud spend" here is <b>quota, not dollars</b>: the default engine is the flat SuperGrok subscription, so a cloud steer call costs $0 marginal until the weekly pool is exhausted (a 402 has happened once). The pre-gate's ~63% cut already stretches that pool.</p>
+    <p>The one improvement worth making is the <b>quota fallback</b> — local rtx4080 as a degraded-but-not-blind safety net when cloud returns 402, never as the primary tier.</p>
+  </div>
+
+  <footer>/steer decision routing · documented 2026-07-18 · repo source of truth: latch/docs/ · Mini→cloud, MacBook Pro→local</footer>
+</div>
