@@ -46,7 +46,7 @@ that depends on it inherits that.
 | `/readout` | yes | yes |
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
-| `/steer` | yes | **no** — needs latch |
+| `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |
 | `/drive` | yes | **no** — needs latch |
 
 The four that hold and report on a goal — `/turbo`, `/standup`, `/readout`,
