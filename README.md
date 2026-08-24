@@ -63,8 +63,10 @@ session while it runs.
 
 **To also send input into a running session from outside it**, the session has
 to have been launched under a supervisor that owns its terminal. The setup here
-uses [`latch`](https://github.com/anthropics/claude-code) — an in-house wrapper,
-not public — via a shell alias, so that every session is attachable by default:
+uses `latch`, a terminal supervisor that owns the session's pseudo-terminal and
+accepts input into it from outside. It is a separate project of the author's and
+is not currently published, so treat the alias below as the *shape* of the
+solution rather than something you can install today:
 
 ```bash
 alias claude='latch run -- claude-stable --dangerously-skip-permissions'
