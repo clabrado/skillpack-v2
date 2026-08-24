@@ -15,8 +15,15 @@ know" rather than filling a gap with a plausible sentence.
 | **`/readout [topic]`** | Six questions, plain English, every claim re-checked this turn. Status, not a log dump. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 
-Plus **[`latch/`](latch/)** — the terminal supervisor that makes attaching to a
-running session possible at all.
+Two more come with the supervisor in [`latch/`](latch/) and need it running:
+
+| Skill | What it does |
+|---|---|
+| **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away mid-task rather than only at the start. |
+| **`/drive`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
+
+`/steer` is the one that pairs with `/turbo` and `/standup`: those hold a goal,
+`/steer` notices when the work stops serving it.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.

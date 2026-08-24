@@ -6,30 +6,50 @@
 # script's. Nothing is ever deleted.
 set -uo pipefail
 
-SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/skills"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC="$ROOT/skills"
+LATCH_SRC="$ROOT/latch/skills"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+
+# Standalone — depend on nothing outside Claude Code.
 SKILLS=(turbo standup readout sid)
+# Ship inside latch/ and DO NOT WORK without it; installed, but flagged.
+LATCH_SKILLS=(steer drive)
 
 [ -d "$SRC" ] || { echo "error: no skills/ directory beside this script"; exit 1; }
 mkdir -p "$DEST" || exit 1
 
 conflicts=0
-for s in "${SKILLS[@]}"; do
+
+install_one() {
+  local src_dir="$1" s="$2"
   if [ -e "$DEST/$s" ]; then
     echo "SKIP  $s — already exists at $DEST/$s"
-    if ! diff -rq "$SRC/$s" "$DEST/$s" >/dev/null 2>&1; then
+    if ! diff -rq "$src_dir/$s" "$DEST/$s" >/dev/null 2>&1; then
       echo "      and it DIFFERS from this pack's copy:"
-      diff -rq "$SRC/$s" "$DEST/$s" 2>&1 | sed 's/^/        /'
+      diff -rq "$src_dir/$s" "$DEST/$s" 2>&1 | sed 's/^/        /'
     else
       echo "      (identical — nothing to do)"
     fi
     conflicts=$((conflicts + 1))
-    continue
+    return 0
   fi
-  cp -R "$SRC/$s" "$DEST/$s" || { echo "error: could not copy $s"; exit 1; }
+  cp -R "$src_dir/$s" "$DEST/$s" || { echo "error: could not copy $s"; return 1; }
   [ -f "$DEST/$s/sid.sh" ] && chmod +x "$DEST/$s/sid.sh"
   echo "OK    $s -> $DEST/$s"
+}
+
+for s in "${SKILLS[@]}"; do
+  install_one "$SRC" "$s" || exit 1
 done
+
+if [ -d "$LATCH_SRC" ]; then
+  echo
+  echo "These two need latch running to do anything at all:"
+  for s in "${LATCH_SKILLS[@]}"; do
+    [ -d "$LATCH_SRC/$s" ] && { install_one "$LATCH_SRC" "$s" || exit 1; }
+  done
+fi
 
 echo
 if [ "$conflicts" -gt 0 ]; then
@@ -52,3 +72,4 @@ if [ -d "$(dirname "$SRC")/latch" ]; then
   echo "  alias claude='latch run -- claude-stable --dangerously-skip-permissions'"
 fi
 echo "Done. In Claude Code: /turbo, /standup, /readout, /sid"
+echo "                      /steer and /drive once latch is wired up."
