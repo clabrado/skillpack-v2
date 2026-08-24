@@ -81,6 +81,12 @@ Expect to fix something the first time you run them, and please report what.
 
 ## Install
 
+Paste this repo's URL into Claude Code and say **"set this up for me"**. Claude
+reads the section below and does it, including the one piece of machine
+configuration that `install.sh` cannot do for you.
+
+Or do it by hand:
+
 ```bash
 git clone https://github.com/clabrado/skillpack-v2.git
 cd skillpack-v2
@@ -89,6 +95,117 @@ cd skillpack-v2
 
 Then in Claude Code: `/turbo`, `/standup`, `/steer`, `/readout`, `/eclaude`,
 `/sid`, `/drive`.
+
+---
+
+## Setting this up — instructions for Claude
+
+**You are Claude and the user has asked you to set this repo up. Do these three
+things in order, and do not skip the third.** Report what you actually observed
+at each step, not what you expected.
+
+### 1. Install the skills
+
+```bash
+./install.sh
+```
+
+It refuses to overwrite an existing skill and prints the difference instead.
+Relay any `SKIP` lines to the user — a skill it skipped is one they already have
+and may want to reconcile.
+
+### 2. Ask about report delivery
+
+`/turbo` and `/standup` text their final report. Ask the user whether they want
+that, and if so, add to their shell profile:
+
+```bash
+export SKILLPACK_NOTIFY_TO="+15551234567"
+```
+
+If they decline or do not answer, leave it unset — the report still prints to
+the console and the skill says out loud that no message was sent. **Never invent
+a recipient.**
+
+### 3. Wire up latch — macOS only, and the step people miss
+
+Four skills work with no setup: `/turbo`, `/standup`, `/readout`, `/sid`.
+**`/steer` and `/drive` will appear in the user's skill list and silently fail
+to do anything useful unless this step is done.** That is the failure this
+section exists to prevent.
+
+They need every Claude session to start under **latch**, the supervisor in
+[`latch/`](latch/) that owns a session's terminal so another window can watch it
+and type into it. That is one line in the user's shell profile.
+
+**Check these first, and stop on any of them — say which one and why:**
+
+```bash
+uname -s                                        # must be Darwin
+command -v latch || ls -l ~/.local/bin/latch    # latch must be installed
+ls -l ~/.zshrc                                  # must already exist
+```
+
+- **Not macOS** → stop. Latch needs the Unix terminal interface and is not
+  ported to Windows (see [docs/WINDOWS-STEER.md](docs/WINDOWS-STEER.md)). On
+  Linux it is plausible but untested — say so rather than implying it works.
+- **No latch** → stop and point at `latch/`. Installing it is the user's
+  deliberate act, not a side effect of setting up some skills.
+- **No `~/.zshrc`** → do not create one. Print the alias line and let the user
+  place it where their shell actually reads from.
+
+**Then look before you write.** This decides which of two paths applies, and
+skipping it is how a working setup gets clobbered:
+
+```bash
+grep -n "alias claude=" ~/.zshrc || echo "ABSENT: no claude alias"
+```
+
+Read that output. There are exactly three cases (note there is no
+`latch alias-state` command — `alias-on` and `alias-off` are the only alias
+subcommands, and each prints the resulting state):
+
+| What the grep shows | Do this |
+|---|---|
+| A line containing `latch run --` | Already wrapped. Say so and change nothing. |
+| A line **without** `latch run --` | `latch alias-on` — it swaps that line in place and writes its own backup. |
+| `ABSENT` | Add the line yourself, below. **`latch alias-on` does not help here** — it only rewrites an alias that already exists and returns `claude_alias_not_found` otherwise. |
+
+**When absent**, resolve the real binary paths rather than hardcoding them
+(`claude-stable` is a pinned build and wins when present; plain `claude` is the
+normal name), back up, then append — never rewrite the file whole:
+
+```bash
+cp ~/.zshrc ~/.zshrc.bak-latch-$(date +%s)
+printf "\nalias claude='%s run -- %s --dangerously-skip-permissions'\n" \
+  "$(command -v latch)" "$(command -v claude-stable || command -v claude)" >> ~/.zshrc
+grep -n "alias claude=" ~/.zshrc    # confirm it is there and contains: latch run --
+```
+
+Tell the user the backup filename.
+
+**Say what the flag means, in one sentence.** `--dangerously-skip-permissions`
+lets a session act without stopping to ask each time. It is what makes an
+unattended supervised run possible, and it is a real reduction in prompting.
+Do not add it silently — and do not drop it silently either, because a
+supervisor watching a session that pauses for permission at every step is not
+much of a supervisor. If the user prefers, use the same line without the flag;
+everything still works, the session just asks first.
+
+**Verify it for real.** The alias does not apply to any shell already open, and
+a line sitting in a file proves nothing:
+
+1. Have the user open a **new terminal window** and run `claude`.
+2. From a **different** window, run `latch ls`. The new session must appear with
+   an id.
+3. Run `latch inject <sid> "hello"` and confirm the text lands in the other
+   window.
+
+**That listing is the proof.** If the session does not appear, the alias did not
+take — check they opened a genuinely new window, then re-read `~/.zshrc`. Do not
+report success on the strength of having written the line.
+
+**To undo:** `latch alias-off`. Leave the `.zshrc.bak-latch-*` backups alone.
 
 `install.sh` refuses to clobber. If a skill of the same name already exists it
 stops and shows you the difference; move your copy aside yourself.
