@@ -15,6 +15,12 @@ Run the script and print its output:
 bash ~/.claude/skills/sid/sid.sh
 ```
 
+On Windows, run the PowerShell version instead — same output:
+
+```powershell
+powershell -NoProfile -File $HOME\.claude\skills\sid\sid.ps1
+```
+
 Report the block as-is. Do not paraphrase the paths, and do not add narration
 unless Chris asks a follow-up.
 

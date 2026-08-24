@@ -33,6 +33,52 @@ running. `/turbo`, `/standup`, `/readout` and `/sid` do not.
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
 
+## Which of these run where
+
+Measured, not assumed. Latch's supervisor imports `termios`, `tty` and `fcntl`
+— the Unix terminal interface — so it cannot run on Windows, and everything
+that depends on it inherits that.
+
+| Skill | macOS / Linux | Windows |
+|---|---|---|
+| `/turbo` | yes | yes |
+| `/standup` | yes | yes |
+| `/readout` | yes | yes |
+| `/sid` | yes | yes (`sid.ps1`) |
+| `/eclaude` | yes, watchable | yes, **not** watchable |
+| `/steer` | yes | **no** — needs latch |
+| `/drive` | yes | **no** — needs latch |
+
+The four that hold and report on a goal — `/turbo`, `/standup`, `/readout`,
+`/sid` — are the core of the pack and work everywhere. What Windows loses is
+the ability to reach into a *running* session from another window.
+
+`/eclaude` still opens a fresh session on Windows; that session simply cannot
+be watched or typed into from elsewhere, and the script says so on every launch
+rather than leaving you to discover it.
+
+**Windows install:**
+
+```powershell
+git clone https://github.com/clabrado/skillpack-v2.git
+cd skillpack-v2
+.\install.ps1
+```
+
+`install.ps1` deliberately does not install `/steer` or `/drive` — a skill that
+appears in your list and cannot work is worse than one that is absent.
+
+**Notifications on Windows.** There is no iMessage. `SKILLPACK_NOTIFY_BIN` takes
+any command with the shape `<bin> send --to <recipient> --service imessage
+--text <body>`, so a one-line wrapper around ntfy, Pushover, or a Teams or Slack
+webhook works. Unset means the report prints to the console and says no message
+was sent.
+
+**Honest status of the Windows scripts:** `install.ps1`, `bin\eclaude.ps1` and
+`skills\sid\sid.ps1` were written on a Mac with no PowerShell available, so
+they are **unverified by execution**. They are read-checked, not run-checked.
+Expect to fix something the first time you run them, and please report what.
+
 ## Install
 
 ```bash
