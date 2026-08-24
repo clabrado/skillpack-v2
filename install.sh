@@ -13,7 +13,7 @@ DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
 # Standalone — depend on nothing outside Claude Code.
 SKILLS=(turbo standup readout sid)
-# Ship inside latch/ and DO NOT WORK without it; installed, but flagged.
+# Also in skills/, but DO NOTHING without latch running; installed, and flagged.
 LATCH_SKILLS=(steer drive)
 
 [ -d "$SRC" ] || { echo "error: no skills/ directory beside this script"; exit 1; }
@@ -43,11 +43,22 @@ for s in "${SKILLS[@]}"; do
   install_one "$SRC" "$s" || exit 1
 done
 
+echo
+echo "These two need latch running to do anything at all:"
+for s in "${LATCH_SKILLS[@]}"; do
+  [ -d "$SRC/$s" ] && { install_one "$SRC" "$s" || exit 1; }
+done
+
+# skills/steer and skills/drive are what this pack installs; latch/skills/ holds
+# latch's own copies, which `latch skills install` symlinks. Two copies can
+# drift, so say so out loud rather than trusting they match.
 if [ -d "$LATCH_SRC" ]; then
-  echo
-  echo "These two need latch running to do anything at all:"
   for s in "${LATCH_SKILLS[@]}"; do
-    [ -d "$LATCH_SRC/$s" ] && { install_one "$LATCH_SRC" "$s" || exit 1; }
+    if [ -d "$LATCH_SRC/$s" ] && ! diff -rq "$SRC/$s" "$LATCH_SRC/$s" >/dev/null 2>&1; then
+      echo "WARN  skills/$s and latch/skills/$s have DRIFTED apart:"
+      diff -rq "$SRC/$s" "$LATCH_SRC/$s" 2>&1 | sed 's/^/        /'
+      echo "      latch/skills/ is what 'latch skills install' uses. Reconcile them."
+    fi
   done
 fi
 

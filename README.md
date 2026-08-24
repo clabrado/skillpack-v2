@@ -15,7 +15,8 @@ know" rather than filling a gap with a plausible sentence.
 | **`/readout [topic]`** | Six questions, plain English, every claim re-checked this turn. Status, not a log dump. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 
-Two more come with the supervisor in [`latch/`](latch/) and need it running:
+Two more are in [`skills/`](skills/) with the rest, but need the supervisor in
+[`latch/`](latch/) actually running to do anything:
 
 | Skill | What it does |
 |---|---|
@@ -24,6 +25,10 @@ Two more come with the supervisor in [`latch/`](latch/) and need it running:
 
 `/steer` is the one that pairs with `/turbo` and `/standup`: those hold a goal,
 `/steer` notices when the work stops serving it.
+
+Latch carries its own copies of those two at `latch/skills/`, because
+`latch skills install` links them into place itself. `install.sh` warns if the
+two copies ever drift apart rather than assuming they match.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
