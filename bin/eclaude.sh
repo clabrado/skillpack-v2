@@ -79,6 +79,27 @@ case "$(uname -s)" in
     # Launch WITHOUT stealing focus. Terminal needs a moment at the front for
     # the window to open reliably, so remember what was frontmost and hand
     # focus straight back — a spawned window must never interrupt typing.
+    # The command is handed over as a temp SCRIPT rather than interpolated into
+    # the AppleScript source. Interpolating meant printf %q shell-escaping was
+    # re-read by AppleScript, which has different escape rules: a space or quote
+    # in a path was a compile error (-2741) and no window opened at all, and a
+    # backslash collapsed so the session silently started in the WRONG directory.
+    # The mktemp path has no metacharacters, so inlining it is safe.
+    LAUNCHER="$(mktemp "${TMPDIR:-/tmp}/eclaude-launch.XXXXXX")"
+    {
+      echo '#!/usr/bin/env bash'
+      echo "rm -f -- $(printf '%q' "$LAUNCHER")"
+      echo "cd $(printf '%q' "$CWD") || exit 1"
+      if [[ "$USE_LATCH" == "1" ]]; then
+        printf 'exec %q run' "$LATCH_BIN"
+        [[ -n "$NAME" ]] && printf ' --name %q' "$NAME"
+        printf ' -- %q --dangerously-skip-permissions\n' "$CLAUDE_BIN"
+      else
+        printf 'exec %q --dangerously-skip-permissions\n' "$CLAUDE_BIN"
+      fi
+    } > "$LAUNCHER"
+    chmod +x "$LAUNCHER"
+
     osascript <<EOF
 set prevApp to ""
 try
@@ -86,7 +107,7 @@ try
 end try
 tell application "Terminal"
   activate
-  do script "$CMD"
+  do script "$LAUNCHER"
 end tell
 if prevApp is not "" and prevApp is not "Terminal" then
   try
