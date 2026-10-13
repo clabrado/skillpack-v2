@@ -1,6 +1,6 @@
 # skillpack v2
 
-Fourteen Claude Code skills that work as one loop: **give a goal, walk away, get a
+Fifteen Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -24,6 +24,7 @@ know" rather than filling a gap with a plausible sentence.
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 | **`/drive`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
 | **`/ad-qa [target]`** | Adversarial QA of any deliverable — answer, PDF, deck, sheet, code, email — against the original ask and every source. An independent Opus reviewer recomputes numbers, checks quotes verbatim, and traces claims; each finding is re-verified before it is reported. `--fix` writes a versioned, re-rendered copy. |
+| **`/se-notes <lookback>`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
@@ -35,7 +36,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake` and `/ad-qa` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa` and `/se-notes` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
