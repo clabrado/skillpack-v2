@@ -24,7 +24,7 @@ Adversarial QA for any delivered ask, artifact, quote, or dataset. An independen
 
 ## What is ad-qa
 A skill (`/ad-qa`) that red-teams anything Claude or a human delivered before someone relies on it: chat answers, PDFs, decks, docs, spreadsheets, code, emails, RFP responses, quotes, data tables.
-- **Where it lives:** `~/.claude/skills/ad-qa/`, shared to `.claude-work` and `.claude-eco` by symlinked `skills/` directories.
+- **Where it lives:** `~/.claude/skills/ad-qa/`.
 - **What it replaces:** ad-hoc "re-read it once" self-review. That review is biased, because the author checks their own work against their own memory.
 
 ## Design
@@ -86,7 +86,7 @@ None. The skill uses local tools only. Fetching a URL target uses whatever web o
 - **Numbers only, emphasized:** `/ad-qa model.xlsx --focus numbers --strict`
 
 ## Registration / Installation
-None needed. The directory under `~/.claude/skills/` is auto-discovered by all three config forks through symlinks.
+`./install.sh` (or `install.ps1`) copies `skills/ad-qa` to `~/.claude/skills/ad-qa`, where Claude Code auto-discovers it.
 
 ## Staying Current
 - Re-run on a known-bad fixture after editing the prompt template. Keep a v1 fixture with known errors (the original had six, listed in the Changelog).
