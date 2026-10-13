@@ -14,7 +14,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $src  = Join-Path $root 'skills'
 $dest = if ($env:CLAUDE_SKILLS_DIR) { $env:CLAUDE_SKILLS_DIR } else { Join-Path $HOME '.claude\skills' }
 
-$skills        = @('turbo', 'standup', 'readout', 'sid', 'eclaude')
+$skills        = @('turbo', 'standup', 'readout', 'sid', 'eclaude', 'asap', 'give')
 $unixOnly      = @('steer', 'drive')
 
 if (-not (Test-Path -LiteralPath $src)) {
@@ -63,4 +63,4 @@ if (-not $env:SKILLPACK_NOTIFY_TO) {
     Write-Output "      command taking: <bin> send --to <recipient> --service imessage --text <body>"
     Write-Output "      (a one-line wrapper around ntfy, Pushover, or a Teams/Slack webhook)."
 }
-Write-Output "Done. In Claude Code: /turbo, /standup, /readout, /sid, /eclaude"
+Write-Output "Done. In Claude Code: /turbo, /standup, /readout, /sid, /eclaude, /asap, /give"

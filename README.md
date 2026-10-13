@@ -1,6 +1,6 @@
 # skillpack v2
 
-Seven Claude Code skills that work as one loop: **give a goal, walk away, get a
+Nine Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -10,6 +10,8 @@ know" rather than filling a gap with a plausible sentence.
 
 | Skill | What it does |
 |---|---|
+| **`/asap [goal]`** | Takes the "next steps" from the last answer (or the goal you name) and drives them to done: `/standup` the goal, `/turbo` any fixes, an adversarial QA pass by a fresh agent, then the plain-English readout. |
+| **`/give`** | Collects the decisions that are genuinely yours (open forks, blocked items, anything needing your password), filters out what is not, and puts each to you in plan mode with options, a recommendation and the do-nothing default. Read-only. |
 | **`/turbo <goal>`** | Sets the goal as a standing directive and works it autonomously — analyse, build, verify, repeat — until every part is genuinely done. For open-ended building. |
 | **`/standup <goal>`** | Same persistence, different rhythm: a fixed **assess → triage → configure → analyze** cycle each pass. For standing something *up* — a service, a box, a pipeline. |
 | **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away *mid-task*, not only at the start. |
@@ -28,7 +30,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout` and `/sid` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap` and `/give` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -44,6 +46,8 @@ that depends on it inherits that.
 | `/turbo` | yes | yes |
 | `/standup` | yes | yes |
 | `/readout` | yes | yes |
+| `/asap` | yes | yes |
+| `/give` | yes | yes |
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |

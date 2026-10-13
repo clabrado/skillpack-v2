@@ -12,7 +12,7 @@ LATCH_SRC="$ROOT/latch/skills"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
 # Standalone — depend on nothing outside Claude Code.
-SKILLS=(turbo standup readout sid eclaude)
+SKILLS=(turbo standup readout sid eclaude asap give)
 # Also in skills/, but DO NOTHING without latch running; installed, and flagged.
 LATCH_SKILLS=(steer drive)
 
