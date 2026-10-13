@@ -10,7 +10,9 @@ description: >-
   flags assumptions presented as facts, gaps vs. the ask, internal
   contradictions, overclaims, audience/sensitivity leaks, and render defects.
   Main agent re-verifies each finding before reporting. Verdict PASS / PASS
-  WITH FIXES / FAIL. Flags: --fix (apply fixes, write a versioned copy,
+  WITH FIXES / FAIL. Use it on its own after any effort, command or skill run
+  (no target = the latest deliverable), or end any prompt with "then /ad-qa"
+  to QA that task's output once it finishes. Flags: --fix (apply fixes, write a versioned copy,
   re-render, re-QA), --deep (3 parallel Opus lens agents), --sources <paths>,
   --focus <numbers|quotes|claims|ask|render|security>, --strict.
   Triggers - "/ad-qa", "adversarial QA", "red-team this", "QA this before I
@@ -31,7 +33,13 @@ spots. It only sees what you hand it, so **the evidence pack is everything**.
 - **Target (the artifact under test).** Use the path(s), URL, or pasted
   content given. If none is given, the target is **the most recent
   deliverable in this session**: the last file you wrote, or your last
-  substantive answer.
+  substantive answer. This is what makes `/ad-qa` work as a closing step
+  after any other effort, command or skill (`/turbo`, `/se-notes`, a build,
+  a report): run it next and it QAs whatever that produced.
+- **Appended to a task.** If the same prompt asks for work and ends with
+  "then /ad-qa" (or "and QA it"), finish the work first. Then run this skill
+  with that work's deliverable as the target and the rest of the prompt as
+  the ask.
 - `--sources a,b,c`: extra ground-truth files or URLs. Add these to
   everything already in the session: the user's messages, pasted content,
   attachments read, and tool and subagent results.
