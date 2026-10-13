@@ -1,6 +1,6 @@
 # skillpack v2
 
-Nine Claude Code skills that work as one loop: **give a goal, walk away, get a
+Thirteen Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -12,6 +12,10 @@ know" rather than filling a gap with a plausible sentence.
 |---|---|
 | **`/asap [goal]`** | Takes the "next steps" from the last answer (or the goal you name) and drives them to done: `/standup` the goal, `/turbo` any fixes, an adversarial QA pass by a fresh agent, then the plain-English readout. |
 | **`/give`** | Collects the decisions that are genuinely yours (open forks, blocked items, anything needing your password), filters out what is not, and puts each to you in plan mode with options, a recommendation and the do-nothing default. Read-only. |
+| **`/check5 <watch list>`** | Watches in-flight work every 5 minutes and stays quiet unless something really changed: one line per quiet tick, a real report only on a real change. Re-arms itself until the work is done. |
+| **`/fixfail [failure]`** | Turns a recurring failure into a fixed process: finds the core failure class from artifacts, makes the fix a goal, runs it on a subagent through `/asap`, has a separate reviewer approve, then merges. Loop-guarded. |
+| **`/elearn`** | Learns from your own Claude Code session history and proposes changes to your setup (skills, rules, hooks), with every claim traced to a session. Python collector, read-only until you approve. |
+| **`/keep-awake [hours]`** | Holds the Mac awake and unlocked for N hours (default 8) and restores the lock setting when it ends. macOS only. |
 | **`/turbo <goal>`** | Sets the goal as a standing directive and works it autonomously — analyse, build, verify, repeat — until every part is genuinely done. For open-ended building. |
 | **`/standup <goal>`** | Same persistence, different rhythm: a fixed **assess → triage → configure → analyze** cycle each pass. For standing something *up* — a service, a box, a pipeline. |
 | **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away *mid-task*, not only at the start. |
@@ -30,7 +34,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap` and `/give` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn` and `/keep-awake` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -48,6 +52,10 @@ that depends on it inherits that.
 | `/readout` | yes | yes |
 | `/asap` | yes | yes |
 | `/give` | yes | yes |
+| `/check5` | yes | yes |
+| `/fixfail` | yes | yes |
+| `/elearn` | yes | not tested |
+| `/keep-awake` | yes (macOS only) | no |
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |

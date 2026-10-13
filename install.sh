@@ -12,8 +12,10 @@ LATCH_SRC="$ROOT/latch/skills"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
 # Standalone — depend on nothing outside Claude Code.
-SKILLS=(turbo standup readout sid eclaude asap give)
+SKILLS=(turbo standup readout sid eclaude asap give check5 fixfail elearn)
 # Also in skills/, but DO NOTHING without latch running; installed, and flagged.
+# keep-awake wraps macOS caffeinate/defaults/pmset; only offered on macOS.
+[ "$(uname -s)" = "Darwin" ] && SKILLS+=(keep-awake)
 LATCH_SKILLS=(steer drive)
 
 [ -d "$SRC" ] || { echo "error: no skills/ directory beside this script"; exit 1; }
