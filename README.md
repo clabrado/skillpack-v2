@@ -1,6 +1,6 @@
 # skillpack v2
 
-Fifteen Claude Code skills that work as one loop: **give a goal, walk away, get a
+Sixteen Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -24,6 +24,7 @@ know" rather than filling a gap with a plausible sentence.
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 | **`/drive <sid\|name> <text>`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
 | **`/ad-qa [target]`** | Adversarial QA of any deliverable — answer, PDF, deck, sheet, code, email — against the original ask and every source. An independent Opus reviewer recomputes numbers, checks quotes verbatim, and traces claims; each finding is re-verified before it is reported. `--fix` writes a versioned, re-rendered copy. |
+| **`/dt-spend-eval <tenant>`** | For Dynatrace DPS customers: explains why a tenant spends what it spends and where to save. Prices every billing event at DPS list, finds new cost lines, spikes and weekly patterns, breaks the top costs down by host, synthetic monitor, metric key, query user and RUM app, and sorts Full-Stack hosts into move-to-Infrastructure vs keep. A second agent re-runs the queries to disprove findings before the Markdown or HTML report is written. Needs `dtctl`; see [`skills/dt-spend-eval/README.md`](skills/dt-spend-eval/README.md). |
 | **`/se-notes [lookback]`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
@@ -36,7 +37,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa` and `/se-notes` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa`, `/se-notes` and `/dt-spend-eval` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -56,6 +57,7 @@ Arguments in `<>` are required, `[]` optional.
 | `/check5 [watch list]` | What to watch and what counts as a real change. Empty = builds the list from the work in flight. Re-arms every 300 s until the work is done. |
 | `/fixfail [failure]` | Empty = the most recent failure in this session. |
 | `/ad-qa [target]` | Target = file path, URL, or (default) the last answer. `--fix` apply confirmed fixes to a versioned copy and re-render · `--deep` three parallel reviewers · `--sources a,b` extra ground truth · `--focus numbers\|quotes\|claims\|ask\|render\|security` · `--strict` also report plausible findings. |
+| `/dt-spend-eval <tenant> [<tenant> …]` | Tenant = `https://abc12345.apps.dynatrace.com`, `abc12345`, or a dtctl context; repeat for a multi-tenant roll-up. `format=md\|html` (default md) · `since=` / `until=YYYY-MM-DD` (default ~4 months back → yesterday) · `account="<name>"` adds PowerBI commit/consumption context · `out=<dir>` (default current dir) · `-clean` replace hostnames, emails, tenant and entity IDs with placeholders. Read-only; dtctl runs strictly serially. |
 | `/se-notes [lookback]` | `7d` (default), `2w`, `30d`, or `YYYY-MM-DD:YYYY-MM-DD` (`today` allowed). `--dry-run` plan and validate only · `--all` also create held (calendar-only) items. Org from `$SE_NOTES_SF_ORG` or the `sf` default org. |
 | `/elearn` | `--mode step\|auto\|report` · scope `--days N`, `--since-last`, or `--limit N` · `--per-trace` one reviewer per session · `--include-headless` · `--cwd PATH` · `--focus TEXT` · `--resume`. Bare `/elearn` prices the run and asks mode + scope once. |
 | `/keep-awake [hours]` | `/keep-awake 10`, `/keep-awake 1.5` (default 8) · `status` · `stop` · `attach [idleTime]` adopts an orphaned hold. macOS only. |
@@ -90,6 +92,7 @@ that depends on it inherits that.
 | `/keep-awake` | yes (macOS only) | no |
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/ad-qa` | yes | yes (page renders need `pdftoppm`; docx/pptx renders need LibreOffice) |
+| `/dt-spend-eval` | yes | not tested (needs `dtctl` + Python 3.9+) |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |
 | `/drive` | yes | **no** — needs latch |
