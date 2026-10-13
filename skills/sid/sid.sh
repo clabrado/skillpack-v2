@@ -6,7 +6,16 @@
 set -uo pipefail
 
 SID="${CLAUDE_CODE_SESSION_ID:-}"
-PROJECTS="$HOME/.claude/projects"
+# Transcripts live under the ACTIVE config dir, not always ~/.claude. On a
+# machine with several (~/.claude-NAME via CLAUDE_CONFIG_DIR), hardcoding ~/.claude reports
+# "transcript not found" for a file that plainly exists. Search the active fork
+# first, then every sibling fork, before declaring absence.
+PROJECTS="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects"
+ALL_PROJECTS=("$PROJECTS")
+for _f in "$HOME"/.claude "$HOME"/.claude-*; do
+  [ -d "$_f/projects" ] || continue
+  [ "$_f/projects" = "$PROJECTS" ] || ALL_PROJECTS+=("$_f/projects")
+done
 
 if [ -z "$SID" ]; then
   echo "SESSION ID:  unavailable — CLAUDE_CODE_SESSION_ID is not set in this shell."
@@ -26,7 +35,7 @@ TRANSCRIPT=""
 if [ -f "$CAND" ]; then
   TRANSCRIPT="$CAND"
 else
-  TRANSCRIPT="$(find "$PROJECTS" -maxdepth 2 -name "$SID.jsonl" -type f 2>/dev/null | head -1)"
+  TRANSCRIPT="$(find "${ALL_PROJECTS[@]}" -maxdepth 2 -name "$SID.jsonl" -type f 2>/dev/null | head -1)"
 fi
 
 if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ]; then
