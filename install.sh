@@ -12,7 +12,7 @@ LATCH_SRC="$ROOT/latch/skills"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
 # Standalone — depend on nothing outside Claude Code.
-SKILLS=(turbo standup readout sid eclaude asap give check5 fixfail elearn)
+SKILLS=(turbo standup readout sid eclaude asap give check5 fixfail elearn ad-qa)
 # Also in skills/, but DO NOTHING without latch running; installed, and flagged.
 # keep-awake wraps macOS caffeinate/defaults/pmset; only offered on macOS.
 [ "$(uname -s)" = "Darwin" ] && SKILLS+=(keep-awake)
@@ -199,6 +199,6 @@ offer_latch_alias() {
 }
 
 offer_latch_alias
-echo "Done. In Claude Code: /turbo, /standup, /readout, /sid, /eclaude"
+echo "Done. In Claude Code: /turbo, /standup, /readout, /sid, /eclaude, /asap, /give, /ad-qa"
 echo "                      /steer and /drive once latch is wired up."
 echo "                      /eclaude launches windows via bin/eclaude.sh"

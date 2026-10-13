@@ -1,6 +1,6 @@
 # skillpack v2
 
-Thirteen Claude Code skills that work as one loop: **give a goal, walk away, get a
+Fourteen Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -23,6 +23,7 @@ know" rather than filling a gap with a plausible sentence.
 | **`/eclaude [dir]`** | Opens a fresh session in its own window — own context, own terminal, independently watchable. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
 | **`/drive`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
+| **`/ad-qa [target]`** | Adversarial QA of any deliverable — answer, PDF, deck, sheet, code, email — against the original ask and every source. An independent Opus reviewer recomputes numbers, checks quotes verbatim, and traces claims; each finding is re-verified before it is reported. `--fix` writes a versioned, re-rendered copy. |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
@@ -34,7 +35,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn` and `/keep-awake` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake` and `/ad-qa` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -57,6 +58,7 @@ that depends on it inherits that.
 | `/elearn` | yes | not tested |
 | `/keep-awake` | yes (macOS only) | no |
 | `/sid` | yes | yes (`sid.ps1`) |
+| `/ad-qa` | yes | yes (page renders need `pdftoppm`; docx/pptx renders need LibreOffice) |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |
 | `/drive` | yes | **no** — needs latch |
@@ -106,7 +108,7 @@ cd skillpack-v2
 ```
 
 Then in Claude Code: `/turbo`, `/standup`, `/steer`, `/readout`, `/eclaude`,
-`/sid`, `/drive`.
+`/sid`, `/drive`, `/ad-qa`.
 
 ---
 
@@ -146,7 +148,7 @@ a recipient.**
 
 ### 3. Wire up latch — macOS only, and the step people miss
 
-Four skills work with no setup: `/turbo`, `/standup`, `/readout`, `/sid`.
+Five skills work with no setup: `/turbo`, `/standup`, `/readout`, `/sid`, `/ad-qa`.
 **`/steer` and `/drive` will appear in the user's skill list and silently fail
 to do anything useful unless this step is done.** That is the failure this
 section exists to prevent.
