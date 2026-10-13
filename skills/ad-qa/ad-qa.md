@@ -80,8 +80,11 @@ None. The skill uses local tools only. Fetching a URL target uses whatever web o
 - Run it with `python3 -P`.
 
 ## How to Use
-- **Quick check of your last answer, or of whatever the previous command or skill produced:** `/ad-qa`
-- **As the closing step of any prompt:** `build the Q3 summary from these files, then /ad-qa`
+**Main use: the closing step.** End any prompt, command or skill run with `/ad-qa` and it QAs what that work produced:
+- `build the Q3 summary from these files, then /ad-qa`
+- `/ad-qa` on its own, right after `/turbo`, `/se-notes`, a build or a report
+
+**Or name a target:**
 - **A file, plus extra ground truth:** `/ad-qa ~/Downloads/report.pdf --sources ~/Downloads/data.xlsx`
 - **High stakes, with fixes:** `/ad-qa deck.pptx --deep --fix`
 - **Numbers only, emphasized:** `/ad-qa model.xlsx --focus numbers --strict`

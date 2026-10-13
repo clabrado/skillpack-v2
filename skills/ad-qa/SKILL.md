@@ -1,7 +1,9 @@
 ---
 name: ad-qa
 description: >-
-  Adversarial QA against anything delivered — an answer, analysis, report,
+  Two ways to call it: (1) "/ad-qa" at the end of any prompt, command or skill
+  run QAs what that work just produced (the main use); (2) "/ad-qa <target>"
+  QAs a named file, URL or pasted content. Adversarial QA against anything delivered — an answer, analysis, report,
   PDF/DOCX/PPTX/XLSX/HTML artifact, code change, email draft, RFP response,
   quote, table, or dataset — checked against the original ask and every
   provided source (context, documents, tool results, data). Dispatches an
@@ -10,15 +12,13 @@ description: >-
   flags assumptions presented as facts, gaps vs. the ask, internal
   contradictions, overclaims, audience/sensitivity leaks, and render defects.
   Main agent re-verifies each finding before reporting. Verdict PASS / PASS
-  WITH FIXES / FAIL. Use it on its own after any effort, command or skill run
-  (no target = the latest deliverable), or end any prompt with "then /ad-qa"
-  to QA that task's output once it finishes. Flags: --fix (apply fixes, write a versioned copy,
+  WITH FIXES / FAIL. Flags: --fix (apply fixes, write a versioned copy,
   re-render, re-QA), --deep (3 parallel Opus lens agents), --sources <paths>,
   --focus <numbers|quotes|claims|ask|render|security>, --strict.
   Triggers - "/ad-qa", "adversarial QA", "red-team this", "QA this before I
   send it", "check this for errors", "poke holes in this", "verify this
   report", "is this accurate".
-argument-hint: "[target: path | URL | 'last answer' (default)] [--fix] [--deep] [--sources p1,p2] [--focus x] [--strict]"
+argument-hint: "[target: path | URL — omit to QA what was just produced] [--fix] [--deep] [--sources p1,p2] [--focus x] [--strict]"
 ---
 
 # /ad-qa — adversarial QA for any deliverable
