@@ -5,7 +5,7 @@ description: >-
   autonomously through a fixed assess → triage → configure → analyze cycle
   until every technical deliverable the goal requires is genuinely complete,
   real artifacts checked, not claimed. Finishes with a full /readout printed
-  to console and the same readout texted to Chris via iMessage. Triggers -
+  to console and the same readout texted to the user via iMessage. Triggers -
   "/standup", "stand up X", "standup <goal>".
 argument-hint: "<goal description>"
 ---
@@ -15,7 +15,7 @@ argument-hint: "<goal description>"
 Composes three things that already exist separately in this estate into one
 command: a standing goal (the persistence model `/goal` uses), the
 self-paced work loop `/loop` uses in dynamic mode, and the six-question
-`/readout` format — plus a text to Chris at the end so he doesn't have to be
+`/readout` format — plus a text to the user at the end so they don't have to be
 watching the terminal.
 
 Same shape as `/turbo`; the difference is the loop: standup runs a fixed
@@ -55,16 +55,16 @@ This is the persistence contract for the rest of the session on this task:
   the limitation note above) — the discipline is self-imposed. Hold to it
   the same way: don't declare done on a plausible-sounding claim, don't
   quietly drop the goal because something else came up, don't ask
-  Chris "should I continue?" once he's already said `/standup`.
-- If Chris sends something clearly unrelated mid-loop, handle it as an
+  the user "should I continue?" once they've already said `/standup`.
+- If the user sends something clearly unrelated mid-loop, handle it as an
   interruption (per the local-command-caveat / mid-turn-message handling
   already built into this environment), but the standup goal remains active
   underneath unless he explicitly says to drop it or gives a new `/standup`.
 - If real, external circumstances block progress (missing credential, a
-  decision only Chris can make, a resource he told you not to touch right
+  decision only the user can make, a resource they told you not to touch right
   now — see the H15/GX10 precedent from 2026-08-21: he can pause a standup
   loop the same way he paused that drain, and the loop must honor it, not
-  push through), text Chris the blocker via iMessage and hold — this is
+  push through), text the user the blocker via iMessage and hold — this is
   not the same as the loop being "done."
 
 ## Step 3 — work the loop: assess → triage → configure → analyze
@@ -111,12 +111,12 @@ done?
   you on the wakeup or the monitor's notification.
 - **Genuinely done** → proceed to Step 4. Do not loop past completion
   just to "double check" — that's its own kind of unverified busywork.
-- **Genuinely, externally blocked** (not just difficult) → text Chris
+- **Genuinely, externally blocked** (not just difficult) → text the user
   the specific blocker via iMessage (see Step 4's send command), then
   `ScheduleWakeup` with a delay appropriate to how fast that block might
   clear, `noop: true` if nothing new happened this tick.
 
-## Step 4 — finish: readout to console AND to Chris
+## Step 4 — finish: readout to console AND to the user
 
 Once the goal is verifiably complete, produce a `/readout`-format report —
 same six questions, same ground rules (every claim in 1–2 re-checked this
@@ -128,10 +128,10 @@ briefly; no unmeasured fields; plain English; brief):
 3. What's left to do (should be "nothing" if you're calling this done)
 4. Blockers or concerns (name them, or say "none")
 5. Recommended next steps, if any
-6. What's needed from Chris, if anything (or "nothing")
+6. What's needed from the user, if anything (or "nothing")
 
 Print this to the console as your normal response text — this is the
-"console" delivery. Then send the SAME readout text to Chris via iMessage
+"console" delivery. Then send the SAME readout text to the user via iMessage
 so he gets it even if he's not watching the terminal:
 
 ```bash

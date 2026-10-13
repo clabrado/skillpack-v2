@@ -3,7 +3,7 @@ name: readout
 description: >-
   A plain-English, verified status readout of the current work — what's
   actually done, what's left, blockers, recommended next steps, and what
-  Chris (the sovereign user) needs to decide or provide. Not a raw artifact
+  the user needs to decide or provide. Not a raw artifact
   dump (see /status) — this is the narrated synthesis, still bound to
   evidence. Triggers - "/readout", "give me a readout", "status readout",
   "where are we", "sovereign readout", "what's the state of things".
@@ -33,7 +33,7 @@ to write a status novel.
    Zero, one, or a short list. Skip this question entirely (don't pad it)
    if there's genuinely no recommendation to make.
 6. **What do you need from me as the sovereign user?**
-   A decision, an approval, a credential, a piece of context only Chris
+   A decision, an approval, a credential, a piece of context only the user
    has, or explicitly "nothing." Never leave this implicit.
 
 ## Ground rules (non-negotiable, not stylistic preference)

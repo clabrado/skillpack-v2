@@ -14,17 +14,17 @@ know" rather than filling a gap with a plausible sentence.
 | **`/give`** | Collects the decisions that are genuinely yours (open forks, blocked items, anything needing your password), filters out what is not, and puts each to you in plan mode with options, a recommendation and the do-nothing default. Read-only. |
 | **`/check5 <watch list>`** | Watches in-flight work every 5 minutes and stays quiet unless something really changed: one line per quiet tick, a real report only on a real change. Re-arms itself until the work is done. |
 | **`/fixfail [failure]`** | Turns a recurring failure into a fixed process: finds the core failure class from artifacts, makes the fix a goal, runs it on a subagent through `/asap`, has a separate reviewer approve, then merges. Loop-guarded. |
-| **`/elearn`** | Learns from your own Claude Code session history and proposes changes to your setup (skills, rules, hooks), with every claim traced to a session. Python collector, read-only until you approve. |
-| **`/keep-awake [hours]`** | Holds the Mac awake and unlocked for N hours (default 8) and restores the lock setting when it ends. macOS only. |
+| **`/elearn [--mode …]`** | Learns from your own Claude Code session history and proposes changes to your setup (skills, rules, hooks), with every claim traced to a session. Python collector, read-only until you approve. |
+| **`/keep-awake [hours\|status\|stop]`** | Holds the Mac awake and unlocked for N hours (default 8) and restores the lock setting when it ends. macOS only. |
 | **`/turbo <goal>`** | Sets the goal as a standing directive and works it autonomously — analyse, build, verify, repeat — until every part is genuinely done. For open-ended building. |
 | **`/standup <goal>`** | Same persistence, different rhythm: a fixed **assess → triage → configure → analyze** cycle each pass. For standing something *up* — a service, a box, a pipeline. |
-| **`/steer`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away *mid-task*, not only at the start. |
+| **`/steer [notes] [--status\|--stop]`** | Hands the running session to an autonomous supervisor that watches its event stream, answers questions it raises, and pulls it back when the work drifts — so you can walk away *mid-task*, not only at the start. |
 | **`/readout [topic]`** | Six questions, plain English, every claim re-checked this turn. Status, not a log dump. |
-| **`/eclaude [dir]`** | Opens a fresh session in its own window — own context, own terminal, independently watchable. |
+| **`/eclaude [dir] [--name N]`** | Opens a fresh session in its own window — own context, own terminal, independently watchable. Starts in the current directory and on the current config dir unless told otherwise. |
 | **`/sid`** | Prints this session's id and where its transcript lives, so you can attach to it from outside. |
-| **`/drive`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
+| **`/drive <sid\|name> <text>`** | Types into an interactive program the shell tool cannot reach — a live prompt, an installer, a pager, a password prompt. |
 | **`/ad-qa [target]`** | Adversarial QA of any deliverable — answer, PDF, deck, sheet, code, email — against the original ask and every source. An independent Opus reviewer recomputes numbers, checks quotes verbatim, and traces claims; each finding is re-verified before it is reported. `--fix` writes a versioned, re-rendered copy. |
-| **`/se-notes <lookback>`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
+| **`/se-notes [lookback]`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
@@ -40,6 +40,36 @@ running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, 
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
+
+## Usage and options
+
+Every skill also triggers on plain English (the phrases are in each `SKILL.md`).
+Arguments in `<>` are required, `[]` optional.
+
+| Command | Options |
+|---|---|
+| `/turbo <goal>` | Goal in plain words. Runs until done, then prints a `/readout` and texts it if `SKILLPACK_NOTIFY_TO` is set. |
+| `/standup <goal>` | Same as `/turbo`, using the assess → triage → configure → analyze cycle. |
+| `/asap [goal]` | No goal = the "next steps" from the last answer. |
+| `/readout [focus]` | Optional session / ticket / epic to focus on; default is everything in scope. |
+| `/give` | No arguments. Read-only. |
+| `/check5 [watch list]` | What to watch and what counts as a real change. Empty = builds the list from the work in flight. Re-arms every 300 s until the work is done. |
+| `/fixfail [failure]` | Empty = the most recent failure in this session. |
+| `/ad-qa [target]` | Target = file path, URL, or (default) the last answer. `--fix` apply confirmed fixes to a versioned copy and re-render · `--deep` three parallel reviewers · `--sources a,b` extra ground truth · `--focus numbers\|quotes\|claims\|ask\|render\|security` · `--strict` also report plausible findings. |
+| `/se-notes [lookback]` | `7d` (default), `2w`, `30d`, or `YYYY-MM-DD:YYYY-MM-DD` (`today` allowed). `--dry-run` plan and validate only · `--all` also create held (calendar-only) items. Org from `$SE_NOTES_SF_ORG` or the `sf` default org. |
+| `/elearn` | `--mode step\|auto\|report` · scope `--days N`, `--since-last`, or `--limit N` · `--per-trace` one reviewer per session · `--include-headless` · `--cwd PATH` · `--focus TEXT` · `--resume`. Bare `/elearn` prices the run and asks mode + scope once. |
+| `/keep-awake [hours]` | `/keep-awake 10`, `/keep-awake 1.5` (default 8) · `status` · `stop` · `attach [idleTime]` adopts an orphaned hold. macOS only. |
+| `/sid` | No arguments. Prints session id, transcript path, web link, PID, scratchpad. |
+| `/eclaude [dir]` | Default dir = current directory. `--name NAME` · `--fork default\|NAME\|PATH` (`NAME` → `~/.claude-NAME`; default inherits `CLAUDE_CONFIG_DIR`) · `--no-latch` not watchable · `--dry-run` print the command only. |
+| `/steer [notes]` | Extra goal notes for the steerer. `--status` is this session steered? · `--stop` detach the steerer. Needs latch. |
+| `/drive <sid\|name> <text>` | `<sid\|name> --keys enter,y` press keys (`enter esc tab space up down ctrl-c y n q …`) · `--list` targets · `<sid\|name> --interrupt`. Needs latch. |
+
+**Updating an existing install.** `install.sh` never overwrites a skill that
+already exists, so after a `git pull` copy the skills over yourself:
+
+```bash
+git pull && for s in skills/*/; do rsync -a --exclude __pycache__ "$s" ~/.claude/skills/$(basename "$s")/; done
+```
 
 ## Which of these run where
 

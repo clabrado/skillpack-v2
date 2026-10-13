@@ -22,7 +22,7 @@ powershell -NoProfile -File $HOME\.claude\skills\sid\sid.ps1
 ```
 
 Report the block as-is. Do not paraphrase the paths, and do not add narration
-unless Chris asks a follow-up.
+unless the user asks a follow-up.
 
 ## Why a script and not a guess
 
@@ -30,7 +30,7 @@ The session id comes from `CLAUDE_CODE_SESSION_ID`, which Claude Code exports
 into every shell it spawns. That is authoritative.
 
 **Never identify the session by finding the most recently modified `.jsonl` in
-`~/.claude/projects/`.** Chris routinely runs concurrent sessions — latch
+`~/.claude/projects/`.** Users routinely run concurrent sessions — latch
 sessions, steered sessions, child sessions — so modification time identifies
 whichever session wrote last, which is frequently not this one. That method is
 wrong often enough to be worse than useless, because it fails silently and
