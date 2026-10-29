@@ -20,9 +20,11 @@ when_to_use: >-
 # /intel — triangulated call intelligence debrief
 
 Method, sources, structure and voice: `references/method.md` (read it every run).
-Page skeleton: `assets/skeleton.html`. If `private/` exists in this skill folder, it
-holds the user's own finished examples; read the newest one as the quality bar
-(internal only, never quote it into another account's debrief).
+Quality bar: `assets/example/acme-racing-debrief-example.pdf` (12 pages, source
+`assets/example/example-content.html`): a **fictional** account (all companies, people, dates and figures
+are invented) written to the standard of a shipped debrief. Match its depth, voice and layout; never copy
+its facts. Blank page skeleton: `assets/skeleton.html`. If `private/` exists in this skill
+folder, it holds the user's own real debriefs (internal only, never quoted elsewhere).
 
 Paths below are relative to this skill's folder (`<skill>` = the directory holding this file).
 

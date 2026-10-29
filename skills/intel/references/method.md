@@ -1,9 +1,10 @@
 # Intel debrief method
 
 How one call (or transcript, or email thread) becomes an intel debrief PDF.
-Start from `assets/skeleton.html`. If the skill has a `private/` folder, read the
-newest finished example there before writing anything and match its voice, depth
-and structure.
+Before writing anything, read `assets/example/acme-racing-debrief-example.pdf`
+(`pdftotext -layout`) and match its voice, depth and structure. It is fictional: copy
+the shape, never the facts. Start the markup from `assets/example/example-content.html`
+(fully worked) or `assets/skeleton.html` (blank).
 
 ## 1. Ingest the primary source
 
