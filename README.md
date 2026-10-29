@@ -1,6 +1,6 @@
 # skillpack v2
 
-Sixteen Claude Code skills that work as one loop: **give a goal, walk away, get a
+Eighteen Claude Code skills that work as one loop: **give a goal, walk away, get a
 verified report back.**
 
 They are deliberately small and they share one idea — *a claim is worth nothing
@@ -26,6 +26,8 @@ know" rather than filling a gap with a plausible sentence.
 | **`/ad-qa [target]`** | **End any prompt or command with `/ad-qa`** and it QAs what that work just produced; or give it a target (file, URL, pasted text). Adversarial QA of any deliverable — answer, PDF, deck, sheet, code, email — against the original ask and every source. An independent Opus reviewer recomputes numbers, checks quotes verbatim, and traces claims; each finding is re-verified before it is reported. `--fix` writes a versioned, re-rendered copy. |
 | **`/dt-spend-eval <tenant>`** | For Dynatrace DPS customers: explains why a tenant spends what it spends and where to save. Prices every billing event at DPS list, finds new cost lines, spikes and weekly patterns, breaks the top costs down by host, synthetic monitor, metric key, query user and RUM app, and sorts Full-Stack hosts into move-to-Infrastructure vs keep. A second agent re-runs the queries to disprove findings before the Markdown or HTML report is written. Needs `dtctl`; see [`skills/dt-spend-eval/README.md`](skills/dt-spend-eval/README.md). |
 | **`/se-notes [lookback]`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
+| **`/intel <call…>`** | For Solutions Engineers: turns a customer call (Krisp link, Gong call, transcript, email thread, or a Slack DM that contains them) into an 8–12 page Dynatrace-branded PDF debrief. One Opus agent per call checks it against Salesforce, Power BI, Gong, M365, Slack, product docs and the web; a fresh reviewer attacks the draft until no confirmed defect is left. Bottom line, talking points, standard and inverted analysis, triangulation table, next-meeting and POC angle, actions. See [`skills/intel/SKILL.md`](skills/intel/SKILL.md). |
+| **`/solution <source> --account --target`** | For Solutions Engineers: a cited, customer-verifiable design for observing a third-party product with Dynatrace (extension, OTel/log export, API polling, synthetic), usually to displace a competitor. Fans out ~10 Sonnet researchers (one per link plus vendor API, export paths, UX, Dynatrace product truth, account intel), merges their findings into a knowledge graph, then an Opus author writes the PDF with ASCII flow diagrams and a docs appendix. One final adversarial QA pass. **Needs `/intel` installed** (shared build pipeline). |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
@@ -37,7 +39,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa`, `/se-notes` and `/dt-spend-eval` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa`, `/se-notes`, `/dt-spend-eval`, `/intel` and `/solution` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -59,6 +61,8 @@ Arguments in `<>` are required, `[]` optional.
 | `/ad-qa [target]` | Two forms. **Closing step (main use):** `<any prompt or command>, then /ad-qa`, or `/ad-qa` right after it, QAs what that work produced. **Named target:** `/ad-qa <file \| URL>`. `--fix` apply confirmed fixes to a versioned copy and re-render · `--deep` three parallel reviewers · `--sources a,b` extra ground truth · `--focus numbers\|quotes\|claims\|ask\|render\|security` · `--strict` also report plausible findings. |
 | `/dt-spend-eval <tenant> [<tenant> …]` | Tenant = `https://abc12345.apps.dynatrace.com`, `abc12345`, or a dtctl context; repeat for a multi-tenant roll-up. `format=md\|html` (default md) · `since=` / `until=YYYY-MM-DD` (default ~4 months back → yesterday) · `account="<name>"` adds PowerBI commit/consumption context · `out=<dir>` (default current dir) · `-clean` replace hostnames, emails, tenant and entity IDs with placeholders. Read-only; dtctl runs strictly serially. |
 | `/se-notes [lookback]` | `7d` (default), `2w`, `30d`, or `YYYY-MM-DD:YYYY-MM-DD` (`today` allowed). `--dry-run` plan and validate only · `--all` also create held (calendar-only) items. Org from `$SE_NOTES_SF_ORG` or the `sf` default org. |
+| `/intel <source> [<source> …]` | Source = Krisp share link, Gong call, `.eml`/`.txt`/`.vtt`/`.docx`, Slack permalink, "my DM with <name>", or pasted text; one PDF per meeting. `--out <dir>` (default current dir) · `--send-to <slack user>` DM a 2-line summary + attach the PDF · `-clean` sanitize names and hosts for external sharing. Salesforce org from `$INTEL_SF_ORG` or the `sf` default org. |
+| `/solution <source> --account <name> --target <product>` | Source = Slack DM/thread, URLs, file or paste. `--competitor <name>` · `--goal "..."` · `--meeting <date>` · `--out <dir>` · `--send-to <slack user>` one message with text + PDF · `-clean`. |
 | `/elearn` | `--mode step\|auto\|report` · scope `--days N`, `--since-last`, or `--limit N` · `--per-trace` one reviewer per session · `--include-headless` · `--cwd PATH` · `--focus TEXT` · `--resume`. Bare `/elearn` prices the run and asks mode + scope once. |
 | `/keep-awake [hours]` | `/keep-awake 10`, `/keep-awake 1.5` (default 8) · `status` · `stop` · `attach [idleTime]` adopts an orphaned hold. macOS only. |
 | `/sid` | No arguments. Prints session id, transcript path, web link, PID, scratchpad. |
@@ -93,6 +97,7 @@ that depends on it inherits that.
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/ad-qa` | yes | yes (page renders need `pdftoppm`; docx/pptx renders need LibreOffice) |
 | `/dt-spend-eval` | yes | not tested (needs `dtctl` + Python 3.9+) |
+| `/intel`, `/solution` | yes (needs Chrome, Python + PyMuPDF, `pdftotext`, Node; set `CHROME=` on Linux) | not installed by `install.ps1` |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |
 | `/drive` | yes | **no** — needs latch |

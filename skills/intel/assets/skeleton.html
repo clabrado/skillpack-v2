@@ -1,0 +1,220 @@
+<!-- Intel debrief skeleton. Copy to <work>/content.html and replace every [bracketed] placeholder.
+     One page section per Letter page (never write the page class attribute inside a comment: build.py counts it). build.py fills the double-brace placeholders WAVE, P, TOTAL, FOOTER (never write them inside a comment).
+     Classes: see assets/template/style.css. Fix overflow by cutting words, never by shrinking fonts. -->
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <div class="top">
+    <img class="logo" src="logo_color.svg">
+    <div class="kicker" style="margin-top:.5in;position:relative;z-index:2">Account Debrief · [Theme]</div>
+    <h1 style="margin-top:4px">[Account]: [headline that states the play]</h1>
+    <div class="sub">[What this covers]. Prepared for [audience] on [date].</div>
+    <div class="conf"><span class="pill p-p">Dynatrace internal · confidential</span> <span class="pill p-m">Next touch: [date/time]</span></div>
+    {{WAVE}}
+  </div>
+  <div class="body">
+    <div class="bottomline">
+      <div class="kicker" style="color:var(--purple)">The bottom line</div>
+      <p style="font-size:10.6pt;margin:0;color:var(--navy);font-weight:400">[4–6 sentences: who the buyer is, what they must prove, what they asked for, the play, the first proof step. <b>Bold</b> the load-bearing phrases.]</p>
+    </div>
+    <div class="grid4" style="margin-top:14px">
+      <div class="card stat"><div class="n">[n]</div><div class="l">[sourced stat]</div></div>
+      <div class="card stat"><div class="n">[n]</div><div class="l">[sourced stat]</div></div>
+      <div class="card stat"><div class="n">[n]</div><div class="l">[sourced stat]</div></div>
+      <div class="card stat"><div class="n">[n]</div><div class="l">[sourced stat]</div></div>
+    </div>
+    <div class="grid3" style="margin-top:12px">
+      <div class="card accent"><h3>[Theme 1]</h3><p class="small" style="margin:0;color:var(--ink)">[one or two sentences, quote if possible]</p></div>
+      <div class="card purple"><h3>[Theme 2]</h3><p class="small" style="margin:0;color:var(--ink)">[...]</p></div>
+      <div class="card green"><h3>[Theme 3]</h3><p class="small" style="margin:0;color:var(--ink)">[...]</p></div>
+    </div>
+    <div class="card tint" style="margin-top:12px">
+      <h3>Recommended moves</h3>
+      <div class="grid2" style="gap:6px 18px">
+        <div class="row"><span class="num">1</span><span>[move]</span></div>
+        <div class="row"><span class="num">2</span><span>[move]</span></div>
+        <div class="row"><span class="num">3</span><span>[move]</span></div>
+        <div class="row"><span class="num">4</span><span>[move]</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ EXECUTIVE SUMMARY ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">Executive summary</span></div>
+  <div class="kicker">60-second read</div>
+  <h2>[The opportunity in one line]</h2>
+  <div class="bar"></div>
+  <p class="lede">[Opportunity, buyer, ask, play, main threat.]</p>
+  <div class="grid3">
+    <div class="card stat"><div class="n">[n]</div><div class="l">[stat]</div></div>
+    <div class="card stat"><div class="n">[n]</div><div class="l">[stat]</div></div>
+    <div class="card stat"><div class="n">[n]</div><div class="l">[stat]</div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card"><h3>What we need from leadership</h3><p class="small">[asks]</p></div>
+    <div class="card amber"><h3>Fix before the next meeting</h3><p class="small">[over-promises or errors made on the call, with the correction]</p></div>
+  </div>
+  <h3 style="margin-top:12px">Open questions</h3>
+  <p class="small">[discovery gaps]</p>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ MAIN TALKING POINTS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">Main talking points</span></div>
+  <div class="kicker">In priority order</div>
+  <h2>What to say, and why it matters to them</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>#</th><th>Talking point</th><th>Business outcome for the customer</th><th>Potential for Dynatrace</th></tr>
+    <tr><td>1</td><td>[point]</td><td>[outcome]</td><td>[potential]</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card green"><h3>Say</h3><p class="small">[customer-safe phrasing]</p></div>
+    <div class="card red"><h3>Don't say</h3><p class="small">[unverified claims, internal-only roadmap, competitor bashing]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 01 ACCOUNT CONTEXT ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">01 · Account context</span></div>
+  <div class="kicker">Where we stand</div>
+  <h2>[headline]</h2>
+  <div class="bar"></div>
+  <div class="grid2" style="gap:18px">
+    <div>
+      <h3>Relationship timeline</h3>
+      <div class="tl" style="margin-top:8px">
+        <div class="e"><div class="d">[date] · [event]</div><div class="small" style="color:var(--ink)">[detail] [source tag]</div></div>
+        <div class="e hot"><div class="d">[date] · [this call]</div><div class="small" style="color:var(--ink)">[detail]</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Stakeholder map</h3>
+      <table style="margin-top:4px">
+        <tr><th>Person</th><th>Role</th><th>Status</th></tr>
+        <tr><td><b>[name]</b></td><td>[role]</td><td><span class="pill p-g">Engaged</span></td></tr>
+        <tr><td>[name]</td><td>[role]</td><td><span class="pill p-a">Target</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 02 WHAT THE CUSTOMER IS ASKING FOR ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">02 · What [Account] is asking for</span></div>
+  <div class="kicker">Their asks, our answers</div>
+  <h2>[headline]</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>Ask (verbatim, mm:ss)</th><th>How we answer</th><th>Verified?</th></tr>
+    <tr><td><i>"[quote]"</i> ([mm:ss])</td><td>[capability + proof]</td><td><span class="pill p-g">Docs</span></td></tr>
+  </table>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 03 STANDARD ANALYSIS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">03 · Standard analysis</span></div>
+  <div class="kicker">What was said</div>
+  <h2>Explicit business problems, outcomes and technical needs</h2>
+  <div class="bar"></div>
+  <div class="grid3">
+    <div><div class="kicker" style="color:var(--red)">Business problems</div><p class="small">[each tied to a quote]</p></div>
+    <div><div class="kicker" style="color:var(--green)">Desired outcomes</div><p class="small">[...]</p></div>
+    <div><div class="kicker" style="color:var(--blue)">Technical solutions sought</div><p class="small">[...]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 04 INVERTED ANALYSIS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">04 · Inverted analysis</span></div>
+  <div class="kicker">What wasn't said, and how we lose</div>
+  <h2>Reading the call backwards</h2>
+  <div class="bar"></div>
+  <div class="grid2">
+    <div class="card"><h3>Absent</h3><p class="small">[stakeholders, budget, timeline, competitors not mentioned]</p></div>
+    <div class="card red"><h3>Pre-mortem: how we lose</h3><p class="small">[...]</p></div>
+    <div class="card amber"><h3>Contradictions</h3><p class="small">[call vs. systems of record]</p></div>
+    <div class="card"><h3>Our over-promises</h3><p class="small">[...]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 05 TECHNOLOGY ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">05 · Technology &amp; infrastructure</span></div>
+  <div class="kicker">Known vs. unknown</div>
+  <h2>[Account]'s stack</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>Layer</th><th>Known (source)</th><th>Unknown / ask</th></tr>
+    <tr><td>[cloud / runtime / AI / tooling]</td><td>[...]</td><td>[...]</td></tr>
+  </table>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 06 TRIANGULATION ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">06 · Triangulated intelligence</span></div>
+  <div class="kicker">Every source, including the empty ones</div>
+  <h2>What each system says</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>Claim</th><th>Source(s)</th><th>Confidence</th></tr>
+    <tr><td>[claim]</td><td>[SFDC / PBI / Gong / M365 / Slack / docs / web]</td><td><span class="pill p-g">Confirmed</span></td></tr>
+    <tr><td>[claim]</td><td>[...]</td><td><span class="pill p-r">Contradicted</span></td></tr>
+  </table>
+  <h3 style="margin-top:12px">Source coverage</h3>
+  <p class="small">[each source and what it returned, incl. "no results" and tool failures]</p>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 07 NEXT MEETING ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">07 · Next-meeting angle</span></div>
+  <div class="kicker">[date / time]</div>
+  <h2>[demo or agenda title]</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>Min</th><th>Segment</th><th>Answers ask</th><th>Show</th></tr>
+    <tr><td>[0–5]</td><td>[...]</td><td>[#]</td><td>[...]</td></tr>
+  </table>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 08 POC ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">08 · POC / proof angle</span></div>
+  <div class="kicker">Proposed proof of value</div>
+  <h2>[POC name and length]</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>#</th><th>Success criterion (measurable)</th><th>How measured</th></tr>
+    <tr><td>1</td><td>[...]</td><td>[...]</td></tr>
+  </table>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 09 ACTIONS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">09 · Actions &amp; asks</span></div>
+  <div class="kicker">Before [next touch]</div>
+  <h2>Next steps, owners and leadership asks</h2>
+  <div class="bar"></div>
+  <table>
+    <tr><th>Owner</th><th>Due</th><th>Action</th></tr>
+    <tr><td>[name]</td><td>[date]</td><td>[action]</td></tr>
+  </table>
+  <div class="card tint" style="margin-top:12px">
+    <div class="kicker" style="color:var(--purple)">One-line summary for leadership</div>
+    <p style="margin:0">[one line]</p>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
