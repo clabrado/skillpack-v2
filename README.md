@@ -28,6 +28,7 @@ know" rather than filling a gap with a plausible sentence.
 | **`/se-notes [lookback]`** | For Solutions Engineers: sweeps Outlook mail + calendar, Gong and Slack for every customer support activity and demo in the window, diffs against Salesforce, creates the missing SE Events (validated against the org's picklists, first record read back before the rest), and holds calendar-only items for your approval. Needs the `sf` CLI plus M365 and Slack MCPs; see [`skills/se-notes/se-notes.md`](skills/se-notes/se-notes.md). |
 | **`/intel <call…>`** | For Solutions Engineers: turns a customer call (Krisp link, Gong call, transcript, email thread, or a Slack DM that contains them) into an 8–12 page Dynatrace-branded PDF debrief. One Opus agent per call checks it against Salesforce, Power BI, Gong, M365, Slack, product docs and the web; a fresh reviewer attacks the draft until no confirmed defect is left. Bottom line, talking points, standard and inverted analysis, triangulation table, next-meeting and POC angle, actions. Sample output (fictional): [Acme Racing debrief PDF](skills/intel/assets/example/acme-racing-debrief-example.pdf). |
 | **`/solution <source> --account --target`** | For Solutions Engineers: a cited, customer-verifiable design for observing a third-party product with Dynatrace (extension, OTel/log export, API polling, synthetic), usually to displace a competitor. Fans out ~10 Sonnet researchers (one per link plus vendor API, export paths, UX, Dynatrace product truth, account intel), merges their findings into a knowledge graph, then an Opus author writes the PDF with ASCII flow diagrams and a docs appendix. Primary-source claims are treated as hypotheses and marked confirmed, qualified or refuted; every claim is cited so the customer can verify it. One final adversarial QA pass. **Needs `/intel` installed** (shared build pipeline). |
+| **`/debrief <call>`** | For Solutions Engineers, strictly **after** a customer call: turns one call (Teams/Stream meeting-recap link, Gong call, Krisp link, transcript file, or pasted text) into a 12-page Dynatrace-branded debrief PDF with a plan of action. Pulls the full transcript (for Teams recaps, through the transcript API, so long calls aren't truncated), checks every capability claim our side made on the call against public docs, triangulates Salesforce, Power BI, Slack and M365, then writes: bottom line, executive summary, introduction & background, call analysis (what was said, and an inverted/abstract read), ranked desired outcomes with timestamped quotes, what we can deliver, technical Dynatrace win opportunities (explicit and implied), claims check with "say instead" lines, recommended next steps with measurable pilot criteria, actions and sources. One adversarial QA pass. **Needs `/intel` installed** (shared build pipeline). |
 
 `/steer` is what completes the set: `/turbo` and `/standup` hold a goal, and
 `/steer` notices when the work stops serving it.
@@ -39,7 +40,7 @@ alternatives; if your environment does not permit them, leave the settings
 unset and everything works.
 
 `/steer`, `/eclaude` and `/drive` need the supervisor in [`latch/`](latch/)
-running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa`, `/se-notes`, `/dt-spend-eval`, `/intel` and `/solution` do not.
+running. `/turbo`, `/standup`, `/readout`, `/sid`, `/asap`, `/give`, `/check5`, `/fixfail`, `/elearn`, `/keep-awake`, `/ad-qa`, `/se-notes`, `/dt-spend-eval`, `/intel`, `/solution` and `/debrief` do not.
 
 `/turbo` and `/standup` both finish by printing a `/readout` and sending the
 same text to your phone.
@@ -63,6 +64,7 @@ Arguments in `<>` are required, `[]` optional.
 | `/se-notes [lookback]` | `7d` (default), `2w`, `30d`, or `YYYY-MM-DD:YYYY-MM-DD` (`today` allowed). `--dry-run` plan and validate only · `--all` also create held (calendar-only) items. Org from `$SE_NOTES_SF_ORG` or the `sf` default org. |
 | `/intel <source> [<source> …]` | Source = Krisp share link, Gong call, `.eml`/`.txt`/`.vtt`/`.docx`, Slack permalink, "my DM with <name>", or pasted text; one PDF per meeting. `--out <dir>` (default current dir) · `--send-to <slack user>` DM a 2-line summary + attach the PDF · `-clean` sanitize names and hosts for external sharing. Salesforce org from `$INTEL_SF_ORG` or the `sf` default org. e.g. `/intel https://app.krisp.ai/m/abc123` · `/intel "my DM with Jane Doe" --send-to "Jane Doe"` · `/intel ~/Downloads/call.eml -clean` |
 | `/solution <source> --account <name> --target <product>` | Source = Slack DM/thread, URLs, file or paste. `--competitor <name>` · `--goal "..."` · `--meeting <date>` · `--out <dir>` · `--send-to <slack user>` one message with text + PDF · `-clean`. e.g. `/solution "my DM with Jane Doe" --account "Acme Health" --target Workday --competitor Datadog --meeting 2026-11-12` |
+| `/debrief <call>` | Call = Teams/Stream meeting-recap URL, Gong call, Krisp share link, `.txt`/`.vtt`/`.docx` transcript, or pasted text. `--account <name>` SFDC account · `--prior <brief.pdf>` reuse an earlier /solution or /intel brief as background · `--out <dir>` (default current dir) · `-clean` sanitize for external sharing. Output: `<Account> Call Debrief <YYYY-MM-DD>.pdf`. e.g. `/debrief "https://teams.microsoft.com/l/meetingrecap?..."` · `/debrief ~/Downloads/call-transcript.txt --account "Acme Health"` · `/debrief "<gong call url>" --prior "Acme Solution Brief.pdf"` |
 | `/elearn` | `--mode step\|auto\|report` · scope `--days N`, `--since-last`, or `--limit N` · `--per-trace` one reviewer per session · `--include-headless` · `--cwd PATH` · `--focus TEXT` · `--resume`. Bare `/elearn` prices the run and asks mode + scope once. |
 | `/keep-awake [hours]` | `/keep-awake 10`, `/keep-awake 1.5` (default 8) · `status` · `stop` · `attach [idleTime]` adopts an orphaned hold. macOS only. |
 | `/sid` | No arguments. Prints session id, transcript path, web link, PID, scratchpad. |
@@ -97,7 +99,7 @@ that depends on it inherits that.
 | `/sid` | yes | yes (`sid.ps1`) |
 | `/ad-qa` | yes | yes (page renders need `pdftoppm`; docx/pptx renders need LibreOffice) |
 | `/dt-spend-eval` | yes | not tested (needs `dtctl` + Python 3.9+) |
-| `/intel`, `/solution` | yes (needs Chrome, Python + PyMuPDF, `pdftotext`, Node; set `CHROME=` on Linux) | not installed by `install.ps1` |
+| `/intel`, `/solution`, `/debrief` | yes (needs Chrome, Python + PyMuPDF, `pdftotext`, Node; set `CHROME=` on Linux) | not installed by `install.ps1` |
 | `/eclaude` | yes, watchable | yes, **not** watchable |
 | `/steer` | yes | **no** — needs latch ([what a port takes](docs/WINDOWS-STEER.md)) |
 | `/drive` | yes | **no** — needs latch |
@@ -147,9 +149,9 @@ cd skillpack-v2
 ```
 
 Then in Claude Code: `/turbo`, `/standup`, `/steer`, `/readout`, `/eclaude`,
-`/sid`, `/drive`, `/ad-qa`, `/intel`, `/solution`.
+`/sid`, `/drive`, `/ad-qa`, `/intel`, `/solution`, `/debrief`.
 
-**`/intel` and `/solution` prerequisites:** Google Chrome, Python 3 with PyMuPDF
+**`/intel`, `/solution` and `/debrief` prerequisites:** Google Chrome, Python 3 with PyMuPDF
 (`pip install pymupdf`), `pdftotext` (poppler), Node 18+, and the `sf` CLI. Gong,
 Power BI, M365 and Slack connectors are used when present and reported as "not
 available" when not. PDFs use Arial unless you set `INTEL_FONT_DIR` to a folder with

@@ -1,0 +1,362 @@
+<!-- /debrief page skeleton (12 pages). Structure and classes of a shipped debrief; every [text] is a placeholder.
+     Built with the /intel build.py: placeholders WAVE, P, TOTAL, FOOTER are filled at build time. -->
+<style>
+.diag{font-family:Menlo,Consolas,monospace;font-size:6.9pt;line-height:1.28;background:#00092F;color:#DCE4FF;border-radius:8px;padding:9px 11px;margin:6px 0 8px;white-space:pre;overflow:hidden}
+.diag .h{color:#7FA8FF}.diag .g{color:#4BE3B4}.diag .a{color:#FFC94D}.diag .r{color:#FF8496}
+.dlabel{font-size:7.2pt;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);font-weight:600;margin:6px 0 0}
+td .small{display:block}
+.tight td{padding:4px 6px}
+.tight th{padding:4px 6px}
+.cover .conf{margin-top:10px;position:relative;z-index:2}
+</style>
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <div class="top">
+    <img class="logo" src="logo_color.svg">
+    <div class="kicker" style="margin-top:.5in;position:relative;z-index:2;color:#9DB8FF">[text]</div>
+    <h1 style="margin-top:4px;position:relative;z-index:2">[text]</h1>
+    <div class="sub" style="position:relative;z-index:2">[text]</div>
+    <div class="conf"><span class="pill p-p">[text]</span> <span class="pill p-m">[text]</span></div>
+    {{WAVE}}
+  </div>
+  <div class="body">
+    <div class="bottomline">
+      <div class="kicker" style="color:var(--purple)">[text]</div>
+      <p style="font-size:10.4pt;margin:0;color:var(--navy);font-weight:400">[text]<b>[text]</b>[text]<b>[text]</b>[text]<b>[text]</b>[text]<b>[text]</b>[text]</p>
+    </div>
+    <div class="grid4" style="margin-top:14px">
+      <div class="card stat"><div class="n">[n]<small>[text]</small></div><div class="l">[text]</div></div>
+      <div class="card stat"><div class="n">[text]</div><div class="l">[text]</div></div>
+      <div class="card stat"><div class="n">[text]</div><div class="l">[text]</div></div>
+      <div class="card stat"><div class="n">[text]</div><div class="l">[text]</div></div>
+    </div>
+    <div class="grid3" style="margin-top:12px">
+      <div class="card accent"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+      <div class="card purple"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+      <div class="card green"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    </div>
+    <div class="card tint" style="margin-top:12px">
+      <h3>[text]</h3>
+      <div class="grid2" style="gap:6px 18px">
+        <div class="row"><span class="num">[n]</span><span>[text]</span></div>
+        <div class="row"><span class="num">[n]</span><span>[text]</span></div>
+        <div class="row"><span class="num">[n]</span><span>[text]</span></div>
+        <div class="row"><span class="num">[n]</span><span>[text]</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ EXECUTIVE SUMMARY ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <p class="lede">[text]</p>
+  <div class="grid3">
+    <div class="card stat"><div class="n">[text]</div><div class="l">[text]</div></div>
+    <div class="card stat"><div class="n">[n]</div><div class="l">[text]</div></div>
+    <div class="card stat"><div class="n">[text]</div><div class="l">[text]</div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card purple"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]<b>[text]</b>[text]</p></div>
+    <div class="card red"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card amber"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <h3 style="margin-top:12px">[text]</h3>
+  <p class="small">[text]</p>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 00 INTRODUCTION & BACKGROUND ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <p>[text]<span class="pill p-m">[text]</span> <span class="pill p-m">[text]</span> <span class="pill p-m">[text]</span>[text]</p>
+  <div class="grid2" style="gap:18px;margin-top:6px">
+    <div>
+      <h3>[text]</h3>
+      <div class="tl" style="margin-top:8px">
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]<span class="pill p-m">[text]</span></div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]</div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]<span class="pill p-m">[text]</span></div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]<span class="pill p-m">[text]</span></div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]</div></div>
+        <div class="e hot"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]</div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]</div></div>
+        <div class="e"><div class="d">[text]</div><div class="small" style="color:var(--ink)">[text]</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>[text]</h3>
+      <table class="tight" style="margin-top:4px">
+        <tr><th>[text]</th><th>[text]</th><th>[text]</th></tr>
+        <tr><td><b>[text]</b></td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+        <tr><td><b>[text]</b></td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+        <tr><td><b>[text]</b></td><td>[text]</td><td><span class="pill p-a">[text]</span></td></tr>
+        <tr><td><b>[text]</b></td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+        <tr><td>[text]</td><td>[text]</td><td><span class="pill p-m">[text]</span></td></tr>
+        <tr><td>[text]</td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+        <tr><td>[text]</td><td>[text]</td><td><span class="pill p-a">[text]</span></td></tr>
+        <tr><td>[text]</td><td>[text]</td><td><span class="pill p-a">[text]</span></td></tr>
+      </table>
+      <p class="small" style="margin-top:6px">[text]</p>
+    </div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 01 CALL ANALYSIS: STANDARD ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:15%">[text]</th><th style="width:24%">[text]</th><th>[text]</th></tr>
+    <tr><td>[text]</td><td><b>[text]</b></td><td>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><b>[text]</b></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><b>[text]</b></td><td>[text]<b>[text]</b>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><b>[text]</b></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><b>[n]</b></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><b>[text]</b></td><td>[text]</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:12px">
+    <div>
+      <div class="q">[text]<span class="who">[text]</span></div>
+      <div class="q">[text]<span class="who">[text]</span></div>
+    </div>
+    <div>
+      <div class="q">[text]<span class="who">[text]</span></div>
+      <div class="q">[text]<span class="who">[text]</span></div>
+    </div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 02 CALL ANALYSIS: INVERTED + ABSTRACT ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <div class="grid2">
+    <div class="card purple"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]<b>[text]</b>[text]<b>[text]</b>[text]<b>[text]</b>[text]</p></div>
+    <div class="card amber"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]<b>[text]</b>[n]</p></div>
+    <div class="card green"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]<b>[text]</b>[text]</p></div>
+    <div class="card accent"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="card"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card red"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]<b>[text]</b>[text]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 03 DESIRED OUTCOMES ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:3%">[n]</th><th style="width:26%">[text]</th><th style="width:38%">[text]</th><th>[text]</th></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td>[text]</td><td>[text]</td></tr>
+  </table>
+  <div class="card tint" style="margin-top:10px"><p class="small" style="margin:0;color:var(--ink)"><b>[text]</b>[text]</p></div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 04 WHAT WE CAN DELIVER ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:24%">[text]</th><th style="width:7%">[text]</th><th>[text]</th><th style="width:13%">[text]</th><th style="width:12%">[text]</th></tr>
+    <tr><td><b>[text]</b>[text]</td><td>[text]</td><td>[text]</td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[text]</td><td>[text]</td><td>[text]</td><td><span class="pill p-b">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[n]</td><td>[text]</td><td>[text]</td><td><span class="pill p-b">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[n]</td><td>[text]</td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[n]</td><td>[text]</td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[text]</td><td>[text]</td><td>[text]</td><td><span class="pill p-a">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[n]</td><td>[text]</td><td>[text]</td><td><span class="pill p-g">[text]</span></td></tr>
+    <tr><td><b>[text]</b></td><td>[n]</td><td>[text]</td><td>[text]</td><td><span class="pill p-a">[text]</span></td></tr>
+  </table>
+  <div class="dlabel" style="margin-top:8px">[text]</div>
+<div class="diag"> [ASCII flow: source ──> path ──> <span class="h">Dynatrace</span>]</div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 05 TECHNICAL WIN OPPORTUNITIES ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:3%">[n]</th><th style="width:25%">[text]</th><th style="width:9%">[text]</th><th>[text]</th><th style="width:15%">[text]</th></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-g">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-g">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-g">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-g">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-g">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-p">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-p">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-p">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b>[text]</td><td><span class="pill p-p">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td><b>[text]</b></td><td><span class="pill p-p">[text]</span></td><td>[text]</td><td>[text]</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:10px">
+    <div class="card green"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 06 FIX BEFORE NEXT MEETING + VERIFICATION ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:27%">[text]</th><th style="width:11%">[text]</th><th>[text]</th></tr>
+    <tr><td>[text]</td><td><span class="pill p-r">[text]</span></td><td>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-a">[text]</span></td><td>[text]<b>[text]</b>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-r">[text]</span></td><td>[text]<i>[text]</i>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-a">[text]</span></td><td>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-a">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-a">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-g">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-g">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-g">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-g">[text]</span></td><td>[text]</td></tr>
+  </table>
+  <h3 style="margin-top:10px">[text]</h3>
+  <table class="tight">
+    <tr><td style="width:27%">[text]</td><td style="width:11%"><span class="pill p-a">[text]</span></td><td>[text]<b>[text]</b>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-a">[text]</span></td><td>[text]</td></tr>
+    <tr><td>[text]</td><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
+  </table>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 07 RECOMMENDED NEXT STEPS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <div class="diag"> [ASCII flow: source ──> path ──> <span class="h">Dynatrace</span>]</div>
+  <h3 style="margin-top:8px">[text]</h3>
+  <table class="tight">
+    <tr><th style="width:3%">[n]</th><th>[text]</th><th style="width:34%">[text]</th></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[n]</td><td>[text]</td><td>[text]</td></tr>
+  </table>
+  <div class="grid3" style="margin-top:10px">
+    <div class="card accent"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card purple"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card amber"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ 08 ACTIONS ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <table class="tight">
+    <tr><th style="width:17%">[text]</th><th style="width:11%">[text]</th><th>[text]</th></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+    <tr><td>[text]</td><td>[text]</td><td>[text]</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card green"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+    <div class="card red"><h3>[text]</h3><p class="small" style="margin:0;color:var(--ink)">[text]</p></div>
+  </div>
+  <div class="card tint" style="margin-top:12px">
+    <div class="kicker" style="color:var(--purple)">[text]</div>
+    <p style="margin:0">[text]</p>
+  </div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
+
+<!-- ============ APPENDIX: SOURCES ============ -->
+<section class="page">
+  <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
+  <div class="kicker">[text]</div>
+  <h2>[text]</h2>
+  <div class="bar"></div>
+  <div class="grid2" style="gap:16px">
+  <div>
+    <h3>[text]</h3>
+    <p class="small" style="color:var(--ink)">[text]</p>
+    <h3>[text]</h3>
+    <table class="tight" style="font-size:7.6pt">
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+      <tr><td><b>[n]</b></td><td>[text]</td></tr>
+    </table>
+  </div>
+  <div>
+    <h3>[text]</h3>
+    <table class="tight" style="font-size:7.8pt">
+      <tr><th>[text]</th><th>[text]</th></tr>
+      <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
+      <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
+      <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
+      <!--I3ROWS-->
+    </table>
+    <h3 style="margin-top:10px">[text]</h3>
+    <p class="small" style="color:var(--ink)">[text]</p>
+  </div>
+</div>
+  <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
+</section>
