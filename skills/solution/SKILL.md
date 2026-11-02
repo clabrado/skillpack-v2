@@ -8,14 +8,14 @@ description: >-
   connectors and public sources can answer them. No fixed agent roster, no assumed product,
   integration pattern or competitor. Every lane writes cited findings and a knowledge-graph
   fragment; they merge into one graph. An Opus author then writes a Dynatrace-branded PDF in
-  the /intel visual format. It has a fixed spine (bottom line, desired outcomes, talking
-  points, solution options, proof, next steps, sources, QA), and the author picks the other
+  the /intel visual format. It has a fixed spine (bottom line, executive summary, desired outcomes, talking
+  points, solution options + plan, next steps, appendices (sources, claim verdicts, coverage, QA)), and the author picks the other
   sections from what the evidence shows. Exactly ONE final adversarial QA pass, then fixes and a
   render check.
 argument-hint: "<source...: call | transcript | slack-dm-with-<person> | permalink | email | url | file | \"paste\"> [--account <name>] [--target <topic>] [--goal \"...\"] [--competitor <name>] [--meeting <date>] [--out <dir>] [--send-to <slack-user>] [-clean]"
 when_to_use: >-
   When the user wants a cited document that turns account context into desired outcomes,
-  talking points and a verifiable solution path, whatever the domain (observability, security,
+  talking points and a verifiable solution path from any mix of sources (not tied to one call), whatever the domain (observability, security,
   AI, cost, migration, process, platform): "/solution", "build the solution brief", "what's
   our play for <account>", "how do we solve <problem> for <account>". Strictly a post-call
   write-up with a plan of action → /debrief. Multi-source call intel → /intel.
@@ -47,7 +47,7 @@ session. Discover them at runtime (the tool list and ToolSearch), don't assume t
 
 | Input | How to ingest |
 |---|---|
-| Call: recording or recap link, Gong, Krisp, transcript file | as in `/intel` and `/debrief` "Inputs" (full transcript, not a pane copy) |
+| Call: Teams/Stream recap link, Gong, Krisp, transcript file | as in `/intel` SKILL.md "Inputs"; for Teams/Stream recaps, `/debrief` §1 "Get the full transcript" if installed (full transcript, not a pane copy) |
 | "my discussion with <person>", Slack permalink or thread | Slack connector: find the DM or thread, and take the on-topic messages plus every link in them |
 | Email or thread | M365 or mail connector |
 | URLs, files, prior briefs, pasted text | read directly |
@@ -97,7 +97,7 @@ missing from the evidence. Ask one question only if the problem itself can't be 
 7. **Adversarial QA, exactly once, final**: a fresh Opus reviewer per `references/qa-brief.md`. It
    gets the PDF text, the sources, the lane files, triangulation notes, citations and page PNGs,
    but none of the author's reasoning. Send the CONFIRMED findings to the author (SendMessage) to
-   fix, fill "Appendix · Adversarial QA" with the findings and their dispositions, then rebuild.
+   fix, fill "Appendix D · Adversarial QA" with the findings and their dispositions, then rebuild.
    **No second QA round.**
 8. **Verify yourself**: `python3 <intel>/scripts/check.py <pdf>` exits 0. Open the cover and at
    least 3 page PNGs, including one diagram or table-heavy page and the QA appendix. Grep the PDF
@@ -127,3 +127,5 @@ Every connector is optional: the brief reports which ones it used and which were
 - Never include tokens, tenant URLs, environment IDs, record IDs or emails. Vendor URLs use placeholders.
 - ASCII diagrams in the PDF. Mermaid only in `.md` previews.
 - Report every source that returned nothing or failed.
+- `-clean`: replace account, people, hostnames and internal-only statements with placeholders,
+  drop internal-tagged rows, and keep the footer text check.py requires.

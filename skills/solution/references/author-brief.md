@@ -6,7 +6,7 @@ Hand the Opus author:
 - format references: `<intel>/references/method.md`, `<intel>/assets/template/style.css`,
   `<skill>/assets/skeleton.html` (markup and pattern library), and the newest example in
   `<skill>/private/` if present, for quality only, never for structure or facts
-- the goal in the user's words, the next customer touch, and anything the systems of record contradict
+- the goal in the user's words, any `--target` / `--competitor` hint, the next customer touch, and anything the systems of record contradict
 - a short list of **design-critical gaps it must verify itself** (append to `triangulation_notes.md`)
 - `references/method.md` §Document structure: the fixed spine is mandatory. The author chooses
   the evidence-driven sections and writes one line per section in `triangulation_notes.md`
@@ -20,4 +20,4 @@ Hand the Opus author:
   `python3 <intel>/scripts/build.py <work>/build "<out>.pdf" --title ".." --footer "<Account> · <Topic> · Dynatrace internal"`
   `python3 <intel>/scripts/check.py "<out>.pdf"` (must exit 0; read every page PNG; fix overflow by cutting words)
 - outputs: `build/content.html`, `build/citations.json` [{n,title,url,used_for}], plus a
-  placeholder page "Appendix · Adversarial QA"
+  placeholder page "Appendix D · Adversarial QA"

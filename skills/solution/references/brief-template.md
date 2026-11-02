@@ -7,6 +7,9 @@ with guesses. -->
 ## Problem behind the ask
 <What was literally asked, and what's actually at stake. Quote the line that shows it.>
 
+## User-supplied hints (flags: hypotheses, not facts)
+<--target / --goal / --competitor / --meeting values, or "none">
+
 ## Desired outcomes (ranked, customer's terms)
 1. <outcome> — evidence: <source, timestamp/line>
 2. <outcome> — evidence: <...>

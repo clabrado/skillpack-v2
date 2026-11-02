@@ -31,4 +31,6 @@ every finding and its disposition. No second round.
   proposed collection cadence.
 - **Incremental-read gaps**: "since last run" cursors miss long-running items. Re-read an overlap window and dedupe.
 - **Uniform error or limit semantics assumed**: different API families signal throttling or failure differently.
+- **Outcome drift**: the recommended option serves our product goal, not the top-ranked customer outcome.
+- **Stakeholder gap**: a stakeholder BRIEF.md says could block the play has no talking point.
 - **Cost or metering ignored**: a design that's technically right but trips the customer's stated budget constraint.

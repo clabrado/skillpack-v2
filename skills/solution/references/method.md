@@ -49,14 +49,18 @@ Common shapes:
    (sourced numbers only; fewer is fine), up to 3 theme cards, recommended moves.
 2. **Executive summary**: the problem behind the ask, ranked desired outcomes, the play, the main
    threat to it, "fix before the next touch" (corrections to the source claims), open questions.
-3. **Talking points**: for each stakeholder or outcome, what to say, the proof behind it
+3. **Desired outcomes**: a ranked table of outcome · verbatim evidence (source, timestamp or
+   line) · why it matters · which option serves it. Add at least one implied outcome, labeled as
+   inference.
+4. **Talking points**: for each stakeholder or outcome, what to say, the proof behind it
    (citation), and the likely objection with its answer. Include "say instead" lines for any claim
    that needs correcting.
-4. **Solution options** S1..Sn: how each works, its status or fidelity, what it costs or needs, and
+5. **Solution options** S1..Sn: how each works, its status or fidelity, what it costs or needs, and
    a verdict, plus a simple ASCII flow where a flow exists. Then outcomes × options coverage and a
-   phased plan with measurable exit criteria.
-5. **Next steps**: actions with owners, asks of each side, and success criteria for any pilot or POC.
-6. **Appendices**: sources (every public URL, grouped, so the customer can verify) · source-claim
+   phased plan with measurable exit criteria. If the evidence supports only one path, present
+   that option plus the alternatives it beat, and drop the coverage matrix.
+6. **Next steps**: actions with owners, asks of each side, and success criteria for any pilot or POC.
+7. **Appendices**: sources (every public URL, grouped, so the customer can verify) · source-claim
    verdicts · source coverage, including failures and unavailable connectors · adversarial QA
    (findings + dispositions).
 
