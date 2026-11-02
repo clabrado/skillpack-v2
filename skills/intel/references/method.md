@@ -2,9 +2,11 @@
 
 How one call (or transcript, or email thread) becomes an intel debrief PDF.
 Before writing anything, read `assets/example/acme-racing-debrief-example.pdf`
-(`pdftotext -layout`) and match its voice, depth and structure. It is fictional: copy
-the shape, never the facts. Start the markup from `assets/example/example-content.html`
-(fully worked) or `assets/skeleton.html` (blank).
+(`pdftotext -layout`) and match its voice and depth. It is fictional and shows every possible section. Never
+copy its facts, and don't treat its section list as required: §4 decides which sections
+this call gets. Start the markup from `assets/skeleton.html` and delete the evidence-driven
+pages this call doesn't warrant. Use `assets/example/example-content.html` only as a markup
+reference.
 
 ## 1. Ingest the primary source
 
@@ -14,7 +16,9 @@ them for orientation, but quote and timestamp from the transcript.
 
 - Krisp share link (`app.krisp.ai/m/...`): `scripts/krisp_fetch.js <url> <outprefix>`
   pulls AI notes + speaker-labeled transcript (public share links only).
-- Gong call: `mcp__gong__search_calls` / `retrieve_transcripts`.
+- Gong call (if a call-recording connector is present): `get_call_details` +
+  `retrieve_transcripts` (find it with `list_calls` if filtered search fails). Without a
+  connector, ask for the transcript file or a paste.
 - `.eml` / pasted email: read directly; capture sender, recipients, dates, asks.
 - Local `.txt` / `.vtt` / `.docx` transcript: read directly.
 
@@ -35,7 +39,8 @@ what they're good for. It's a menu, not a checklist: use what's available and re
 add anything else the call points to (a vendor's docs, a partner portal, a prior brief).
 Every source you tried is reported, including empty ones ("Gong: no calls found for
 <account> in 12 months"). So is every relevant source that wasn't available. None is
-silently skipped.
+silently skipped. Available connectors you chose not to query are listed in the
+source-coverage line, with a one-line reason.
 
 | Source (typical) | Tools (if present) | What to pull |
 |---|---|---|
@@ -61,8 +66,8 @@ reported as "not available". Never run `dtctl` in parallel.
 - **Known vs unknown** tech/infra stack.
 - **Triangulation table**: claim → source(s) → confidence (Confirmed /
   Corroborated / Single-source / Contradicted).
-- **Opportunity sizing**: only from real data (SF P2B, PBI consumption,
-  stated counts). Unmeasured stays "unknown" — never invent a number.
+- **Opportunity sizing**: only from real data (a CRM potential/propensity field, usage
+  or consumption data, counts stated on the call). Unmeasured stays "unknown" — never invent a number.
 
 ## 4. Document structure
 
@@ -93,7 +98,10 @@ the full set, in this order:
 12. 09 Actions & asks — owner, date, action; leadership asks
 
 Typically 8–12 pages; length follows the evidence. Never pad a section to keep the
-structure. When an expected section is dropped, say why in one line in the exec summary.
+structure. Record one line per evidence-driven section in `triangulation_notes.md`
+§Section choices: included (the evidence that justified it) or cut (why). Mention a cut in
+the exec summary only when the absence is itself a finding (e.g. no POC angle because no
+success criteria were discussed).
 
 ## 4b. Internal vs customer-safe
 
@@ -131,5 +139,6 @@ not your conclusions. It must try to break the doc:
 - capability claims verified against docs (over-promise = defect)
 - internal contradictions between pages
 - recommendations actually follow from evidence
+- spine sections all present; each evidence-driven section traces to §Section choices
 - render: overflow, clipped text, empty cards
 Fix every CONFIRMED finding, rebuild, re-check. Record the QA verdict.

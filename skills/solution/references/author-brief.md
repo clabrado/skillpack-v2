@@ -3,9 +3,11 @@
 Hand the Opus author:
 - the work dir, `BRIEF.md` (framing, outcomes, run plan), every lane `.md`, `kg/graph.json` +
   `GRAPH.md` + the query command
-- format references: `<intel>/references/method.md` §4b–§6 only (internal vs customer-safe, voice,
-  build + render; NOT its triangulation checklist or section list, since this skill's own
-  method.md governs both), `<intel>/assets/template/style.css`,
+- format references: `<intel>/references/method.md` §4b and §5 (internal vs customer-safe, voice) and the
+  render rules in §6 (check.py must exit 0, look at every page PNG, fix overflow by cutting
+  words, the class list); NOT §6's skeleton/title/footer commands, its triangulation checklist
+  or its section list, since this skill's own method.md, skeleton and build commands below
+  govern those, `<intel>/assets/template/style.css`,
   `<skill>/assets/skeleton.html` (markup and pattern library), and the newest example in
   `<skill>/private/` if present, for quality only, never for structure or facts
 - the goal in the user's words, any `--target` / `--competitor` hint, the next customer touch, and anything the systems of record contradict

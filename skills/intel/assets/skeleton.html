@@ -1,8 +1,10 @@
-<!-- Intel debrief skeleton. Copy to <work>/content.html and replace every [bracketed] placeholder.
+<!-- Intel debrief skeleton. Copy to <work>/content.html. Pages marked SPINE are always kept. Pages marked
+     EVIDENCE-DRIVEN are kept only if this call gives them real content (method.md §4); otherwise delete them.
+     Renumber the section tags 01..N in the order used. Replace every [bracketed] placeholder on the pages you keep.
      One page section per Letter page (never write the page class attribute inside a comment: build.py counts it). build.py fills the double-brace placeholders WAVE, P, TOTAL, FOOTER (never write them inside a comment).
      Classes: see assets/template/style.css. Fix overflow by cutting words, never by shrinking fonts. -->
 
-<!-- ============ COVER ============ -->
+<!-- ============ COVER (SPINE) ============ -->
 <section class="page cover">
   <div class="top">
     <img class="logo" src="logo_color.svg">
@@ -41,7 +43,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ EXECUTIVE SUMMARY ============ -->
+<!-- ============ EXECUTIVE SUMMARY (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">Executive summary</span></div>
   <div class="kicker">60-second read</div>
@@ -62,7 +64,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ MAIN TALKING POINTS ============ -->
+<!-- ============ MAIN TALKING POINTS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">Main talking points</span></div>
   <div class="kicker">In priority order</div>
@@ -79,7 +81,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 01 ACCOUNT CONTEXT ============ -->
+<!-- ============ 01 ACCOUNT CONTEXT (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">01 · Account context</span></div>
   <div class="kicker">Where we stand</div>
@@ -105,7 +107,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 02 WHAT THE CUSTOMER IS ASKING FOR ============ -->
+<!-- ============ 02 WHAT THE CUSTOMER IS ASKING FOR (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">02 · What [Account] is asking for</span></div>
   <div class="kicker">Their asks, our answers</div>
@@ -118,7 +120,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 03 STANDARD ANALYSIS ============ -->
+<!-- ============ 03 STANDARD ANALYSIS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">03 · Standard analysis</span></div>
   <div class="kicker">What was said</div>
@@ -132,7 +134,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 04 INVERTED ANALYSIS ============ -->
+<!-- ============ 04 INVERTED ANALYSIS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">04 · Inverted analysis</span></div>
   <div class="kicker">What wasn't said, and how we lose</div>
@@ -147,7 +149,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 05 TECHNOLOGY ============ -->
+<!-- ============ 05 TECHNOLOGY (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">05 · Technology &amp; infrastructure</span></div>
   <div class="kicker">Known vs. unknown</div>
@@ -160,7 +162,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 06 TRIANGULATION ============ -->
+<!-- ============ 06 TRIANGULATION (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">06 · Triangulated intelligence</span></div>
   <div class="kicker">Every source, including the empty ones</div>
@@ -168,7 +170,7 @@
   <div class="bar"></div>
   <table>
     <tr><th>Claim</th><th>Source(s)</th><th>Confidence</th></tr>
-    <tr><td>[claim]</td><td>[SFDC / PBI / Gong / M365 / Slack / docs / web]</td><td><span class="pill p-g">Confirmed</span></td></tr>
+    <tr><td>[claim]</td><td>[the systems actually queried, e.g. CRM / usage / call recordings / chat / docs / web]</td><td><span class="pill p-g">Confirmed</span></td></tr>
     <tr><td>[claim]</td><td>[...]</td><td><span class="pill p-r">Contradicted</span></td></tr>
   </table>
   <h3 style="margin-top:12px">Source coverage</h3>
@@ -176,7 +178,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 07 NEXT MEETING ============ -->
+<!-- ============ 07 NEXT MEETING (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">07 · Next-meeting angle</span></div>
   <div class="kicker">[date / time]</div>
@@ -189,7 +191,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 08 POC ============ -->
+<!-- ============ 08 POC (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">08 · POC / proof angle</span></div>
   <div class="kicker">Proposed proof of value</div>
@@ -202,7 +204,7 @@
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 09 ACTIONS ============ -->
+<!-- ============ 09 ACTIONS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">09 · Actions &amp; asks</span></div>
   <div class="kicker">Before [next touch]</div>
