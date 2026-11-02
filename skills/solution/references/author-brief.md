@@ -1,14 +1,23 @@
 # Author agent brief (template)
 
 Hand the Opus author:
-- the work dir, `BRIEF.md`, every research `.md`, `kg/graph.json` + `GRAPH.md` + the query command
+- the work dir, `BRIEF.md` (framing, outcomes, run plan), every lane `.md`, `kg/graph.json` +
+  `GRAPH.md` + the query command
 - format references: `<intel>/references/method.md`, `<intel>/assets/template/style.css`,
-  `<skill>/assets/skeleton.html` (markup + ASCII diagram patterns), and the newest example in `<skill>/private/` if present
-- the goal in the user's words, the competitor, the next meeting, and anything systems of record contradict
+  `<skill>/assets/skeleton.html` (markup and pattern library), and the newest example in
+  `<skill>/private/` if present, for quality only, never for structure or facts
+- the goal in the user's words, the next customer touch, and anything the systems of record contradict
 - a short list of **design-critical gaps it must verify itself** (append to `triangulation_notes.md`)
-- the required content list (references/method.md §Document structure) and Rules: `[n]` citations to Appendix A,
-  internal tags such as [SFDC] / [PBI] / [Slack #channel date], "unknown" for unmeasured values, no secrets or IDs, ASCII only
+- `references/method.md` §Document structure: the fixed spine is mandatory. The author chooses
+  the evidence-driven sections and writes one line per section in `triangulation_notes.md`
+  §Section choices, giving the evidence that justified it. It also lists the sections it
+  considered and cut.
+- `references/method.md` §Talking-point rules
+- Rules: `[n]` citations to the sources appendix, internal tags (e.g. [CRM], [Usage], [Chat
+  #channel date], [Call mm:ss]) for whichever systems were actually used, "unknown" for
+  unmeasured values, no secrets or IDs, ASCII only
 - build commands:
-  `python3 <intel>/scripts/build.py <work>/build "<out>.pdf" --title ".." --footer "<Acct> · <Target> Observability · Dynatrace internal"`
+  `python3 <intel>/scripts/build.py <work>/build "<out>.pdf" --title ".." --footer "<Account> · <Topic> · Dynatrace internal"`
   `python3 <intel>/scripts/check.py "<out>.pdf"` (must exit 0; read every page PNG; fix overflow by cutting words)
-- outputs: `build/content.html`, `build/citations.json` [{n,title,url,used_for}], plus a placeholder page "Appendix D · Adversarial QA"
+- outputs: `build/content.html`, `build/citations.json` [{n,title,url,used_for}], plus a
+  placeholder page "Appendix · Adversarial QA"

@@ -1,101 +1,129 @@
 ---
 name: solution
 description: >-
-  Agentic technical solution brief. Starting from a primary source (a Slack DM/thread with
-  someone, a URL list, an email, or pasted notes), fan out one Sonnet agent per link plus
-  domain agents (vendor developer docs, MCP/AI, log/telemetry export paths, UX, Dynatrace
-  product truth, public account intel) and internal agents (Salesforce + Power BI, M365 +
-  broad Slack + Gong). Every agent writes a cited findings file and a knowledge-graph
-  fragment; fragments merge into one graph. An Opus author then writes a Dynatrace-branded
-  PDF in the /intel visual format: cover with bottom line, executive summary, desired
-  principal technical outcome, introduction + glossary, product architecture and telemetry
-  surface, competitive baseline, solution options with ASCII flow diagrams, intel sections
-  (account context, standard/inverted analysis, triangulation, next-meeting angle, POC,
-  actions), summary + recommendations, and an appendix of every public doc so the customer
-  can verify. Exactly ONE final adversarial QA pass, then fixes and a render check.
-argument-hint: "<slack-dm-with-<person> | slack-permalink | url... | file | \"paste\"> --account <name> --target <product/tech> [--competitor <name>] [--goal \"...\"] [--meeting <date>] [--out <dir>] [--send-to <slack-user>] [-clean]"
+  Agentic solution brief. Give it whatever context exists: a call transcript or recording link,
+  a Slack DM or thread, an email, URLs, files, a prior brief, or pasted notes. It works out the
+  problem behind the ask and the outcomes the customer wants. From that evidence it plans its
+  own research: which questions matter, which lanes to run, and which of the available
+  connectors and public sources can answer them. No fixed agent roster, no assumed product,
+  integration pattern or competitor. Every lane writes cited findings and a knowledge-graph
+  fragment; they merge into one graph. An Opus author then writes a Dynatrace-branded PDF in
+  the /intel visual format. It has a fixed spine (bottom line, desired outcomes, talking
+  points, solution options, proof, next steps, sources, QA), and the author picks the other
+  sections from what the evidence shows. Exactly ONE final adversarial QA pass, then fixes and a
+  render check.
+argument-hint: "<source...: call | transcript | slack-dm-with-<person> | permalink | email | url | file | \"paste\"> [--account <name>] [--target <topic>] [--goal \"...\"] [--competitor <name>] [--meeting <date>] [--out <dir>] [--send-to <slack-user>] [-clean]"
 when_to_use: >-
-  When the user wants a cited, customer-verifiable solution design for observing a third-party
-  product/platform with Dynatrace (custom extension, OTel/log export, API polling,
-  synthetic/UX), usually to displace a competitor at an account: "/solution", "build the
-  solution brief", "how do we observe <SaaS> with Dynatrace for <account>".
+  When the user wants a cited document that turns account context into desired outcomes,
+  talking points and a verifiable solution path, whatever the domain (observability, security,
+  AI, cost, migration, process, platform): "/solution", "build the solution brief", "what's
+  our play for <account>", "how do we solve <problem> for <account>". Strictly a post-call
+  write-up with a plan of action → /debrief. Multi-source call intel → /intel.
 ---
 
-# /solution — agentic technical solution brief
+# /solution — agentic solution brief
 
-Method detail: `references/method.md` (read it every run). Page skeleton (markup, ASCII
-diagram and appendix patterns): `assets/skeleton.html`. If `private/` exists in this skill
-folder, it holds the user's own finished briefs; read the newest one as the quality bar
-(internal only, never copy another account's content).
+Method: `references/method.md` (read it every run). Page skeleton: `assets/skeleton.html`
+(markup and pattern library, not a fixed table of contents). If `private/` exists in this skill
+folder, read the newest finished brief there for the quality bar, not the structure. Never copy
+its facts, its research lanes or its section list.
 
-**Requires the `/intel` skill installed next to this one.** The build pipeline, page
-template and render checker are shared. Below, `<intel>` = the sibling `intel/` folder
-(normally `~/.claude/skills/intel`) and `<skill>` = this folder.
+**Requires the `/intel` skill installed next to this one** (shared build pipeline, page template
+and render checker). Below, `<intel>` = the sibling `intel/` folder (normally
+`~/.claude/skills/intel`) and `<skill>` = this folder.
+
+## The one rule that makes this agentic
+
+The evidence decides the run. The template doesn't. Each run derives its problem framing,
+research lanes, sources and sections from what this context actually contains. If a lane or
+section can't be traced to something in the evidence (a claim, a question, a gap, a stakeholder
+need), drop it. If the plan could have been written before reading the sources, it's wrong:
+redo it.
 
 ## Inputs
 
+Any mix of the following. Ingest each with whatever connector is actually available this
+session. Discover them at runtime (the tool list and ToolSearch), don't assume them.
+
 | Input | How to ingest |
 |---|---|
-| "my discussion with <person>" | Slack connector: find the user, read the DM. Take the message(s) on the topic plus every link in them. |
-| Slack permalink / thread | Slack connector: read the thread |
-| URLs / file / pasted text | read directly |
+| Call: recording or recap link, Gong, Krisp, transcript file | as in `/intel` and `/debrief` "Inputs" (full transcript, not a pane copy) |
+| "my discussion with <person>", Slack permalink or thread | Slack connector: find the DM or thread, and take the on-topic messages plus every link in them |
+| Email or thread | M365 or mail connector |
+| URLs, files, prior briefs, pasted text | read directly |
 
-Flags: `--account` (SFDC account name; resolve with SOQL `Name LIKE`), `--target` (the product to
-observe, e.g. Workday), `--competitor` (e.g. Datadog), `--goal`, `--meeting` (next customer
-touch the brief must prep), `--out` (default cwd), `--send-to` (one Slack DM + attached PDF,
-signed as the user asks; send once, nothing else), `-clean` (sanitize for external sharing).
+All flags are optional. `--account` (system-of-record name, resolved when a CRM connector
+exists) · `--target` (the topic, product or problem, if the context doesn't make it obvious) ·
+`--goal` (the outcome the user wants, in their words) · `--competitor` · `--meeting` (the next
+customer touch the brief must prep) · `--out` (default cwd) · `--send-to` (one Slack DM with the
+PDF attached; send once, nothing else) · `-clean` (sanitize for external sharing). Infer anything
+missing from the evidence. Ask one question only if the problem itself can't be identified.
 
 ## Run
 
-1. **Gather** (main thread). Make a work dir `<scratchpad>/<slug>/{src,links,web,internal,kg,build}`.
-   Save the primary source to `src/`. Check auth up front: `sf org list` (org = `$INTEL_SF_ORG`,
-   else the `sf` default org), Power BI and Gong `token_status`; on failure call the MCP's
-   `browser_login`/`login`. A connector that isn't installed is reported as "not available".
-   Resolve the account in SFDC. Copy `<skill>/references/brief-template.md` to `<work>/BRIEF.md`
-   and fill in the mission, primary-source claims (as hypotheses) and canonical KG node IDs.
-2. **Fan out, one message, all background, `model: sonnet`**, each told to read BRIEF.md and write
-   `<id>.md` + `<id>.kg.json`:
-   - `L1..Ln`: **one agent per link** in the primary source.
-   - `W1` vendor developer docs / API surface + auth + throttling · `W2` vendor MCP / AI agents ·
-     `W3` log/audit/telemetry egress + how other tools (SIEMs, competitors) ingest it + OTel receivers ·
-     `W4` end-user experience (synthetic/RUM feasibility, vendor status/maintenance) ·
-     `W5` public account intel (vendor + competitor footprint, leaders, news) ·
-     `D1` Dynatrace product truth for every ingest path (Extensions 2.0, logs/OTLP/bizevents APIs,
-     Collector receivers, Workflows, credential vault, Synthetic, Hub/community precedent).
-   - `I1` Salesforce + Power BI · `I2` M365 + broad Slack (all channels) + Gong. Read-only.
-3. **Knowledge graph**: `python3 <skill>/scripts/build_kg.py <work>` → `kg/graph.json` + `kg/GRAPH.md`.
-   Add `kg/aliases.json` for duplicate IDs and rebuild. Query: `build_kg.py <work> q <term>`.
-4. **Author** (one Opus agent, background): brief per `references/author-brief.md`. It closes the
-   design-critical gaps itself (logged in `triangulation_notes.md`), writes `build/content.html`
-   and `build/citations.json`, builds and checks the PDF, and reads every page PNG.
-5. **Adversarial QA — exactly once, final**: a fresh Opus reviewer gets the PDF text
-   (`pdftotext -layout`), the primary source, every research `.md`, `triangulation_notes.md`,
-   `citations.json` and the page PNGs, but none of the author's reasoning. It re-fetches cited URLs to
-   check claims, and returns CONFIRMED / PLAUSIBLE findings with evidence (brief: `references/qa-brief.md`). Send the CONFIRMED findings to the
-   author (SendMessage) to fix, fill "Appendix · Adversarial QA" with the findings and their
-   dispositions, then rebuild. **No second QA round.**
-6. **Verify yourself**: `python3 <intel>/scripts/check.py <pdf>` exits 0; open the
-   cover and at least 3 page PNGs (including a diagram page and the QA appendix); grep the PDF text for
-   tokens, tenant URLs and SFDC IDs.
-7. **Deliver**: print the path, page count, bottom line and QA verdict. If `--send-to` is given, send one
-   single message carrying both the text and the PDF:
-   `node <skill>/scripts/slack_post_with_file.js <dm-id> "<Name>" "<pdf>" <msg.txt>` (Slack desktop
-   started with `--remote-debugging-port=9222`; it aborts without sending unless the text and the file
-   are both staged; `DRY_RUN=1` stages only). Check with the Slack connector that the message and a
-   `Files:` entry appear. Send no follow-ups. If the Slack app isn't reachable, say so and give the path.
+1. **Gather** (main thread). Make the work dir `<scratchpad>/<slug>/{src,lanes,kg,build}`. Save
+   every primary source to `src/`. Take an inventory of available connectors: list what exists,
+   check auth with `token_status` / `whoami` where offered, and call `browser_login` / `login` on
+   failure. Record each as available, failed or absent. Never assume a connector because a past
+   run used it.
+2. **Frame** (main thread, before any fan-out). Read all of `src/`. Copy
+   `<skill>/references/brief-template.md` to `<work>/BRIEF.md` and fill it from the evidence:
+   - the **problem behind the ask** (what's actually at stake, which may differ from what was
+     literally asked)
+   - **desired outcomes**, ranked, in the customer's terms, each tied to the line of evidence
+     that shows it
+   - the **stakeholders** and what each one needs to hear
+   - the **claims** in the sources, written as hypotheses
+   - the **questions** the brief must answer, plus the unknowns that would change the
+     recommendation
+   - an **inverted read**: what would make the obvious answer wrong
+3. **Plan lanes** (main thread). Group the questions into 3–10 research lanes. Each lane in
+   BRIEF.md §Run plan names its question(s), the evidence that prompted it, and the sources it
+   will try (public docs, vendor material, available internal connectors, the primary links).
+   Shape the lanes to this problem. `references/method.md` §Lane patterns lists common shapes
+   to adapt or reject, not a default set. Give one lane per primary-source link only when the link
+   is load-bearing. Run the self-check in method.md before fanning out.
+4. **Fan out**: one message, all background, `model: sonnet`. Each lane agent reads BRIEF.md and
+   writes `lanes/<id>.md` + `lanes/<id>.kg.json`. Read-only everywhere.
+5. **Knowledge graph**: `python3 <skill>/scripts/build_kg.py <work>` → `kg/graph.json` +
+   `kg/GRAPH.md`. Add `kg/aliases.json` for duplicate IDs and rebuild. Query:
+   `build_kg.py <work> q <term>`. Read the merged graph and look for gaps: an outcome with no
+   evidence, or a claim with a single source. Run at most one targeted follow-up lane per
+   design-critical gap.
+6. **Author** (one Opus agent, background), briefed per `references/author-brief.md`. It
+   chooses the sections (spine + evidence-driven), closes the remaining gaps itself (logged in
+   `triangulation_notes.md`), writes `build/content.html` + `build/citations.json`, builds and
+   checks the PDF, and reads every page PNG.
+7. **Adversarial QA, exactly once, final**: a fresh Opus reviewer per `references/qa-brief.md`. It
+   gets the PDF text, the sources, the lane files, triangulation notes, citations and page PNGs,
+   but none of the author's reasoning. Send the CONFIRMED findings to the author (SendMessage) to
+   fix, fill "Appendix · Adversarial QA" with the findings and their dispositions, then rebuild.
+   **No second QA round.**
+8. **Verify yourself**: `python3 <intel>/scripts/check.py <pdf>` exits 0. Open the cover and at
+   least 3 page PNGs, including one diagram or table-heavy page and the QA appendix. Grep the PDF
+   text for tokens, tenant URLs, record IDs and emails.
+9. **Deliver**: print the path, page count, bottom line, the lanes that ran (and why), and the QA
+   verdict. With `--send-to`: `node <skill>/scripts/slack_post_with_file.js <dm-id> "<Name>"
+   "<pdf>" <msg.txt>` (Slack desktop with `--remote-debugging-port=9222`; `DRY_RUN=1` stages
+   only), then confirm the message and its `Files:` entry with the Slack connector. No
+   follow-ups. If Slack isn't reachable, say so and give the path.
+
+Output name: `<Account> Solution Brief <YYYY-MM-DD>.pdf` (without an account, `<Topic> Solution
+Brief <YYYY-MM-DD>.pdf`).
 
 ## Requirements
 
-Same as `/intel` (Chrome, Python 3 + PyMuPDF, `pdftotext`, Node 18+), plus the `/intel` skill itself.
+Same as `/intel` (Chrome, Python 3 + PyMuPDF, `pdftotext`, Node 18+), plus the `/intel` skill.
+Every connector is optional: the brief reports which ones it used and which were unavailable.
 
 ## Guardrails
 
-- No hallucination: every claim has a URL or internal-record tag plus a verbatim quote in the
-  research files. Anything not opened is "Unverified" or "not found", never inferred.
-- The primary-source claims are hypotheses. The brief must state which were confirmed, qualified or refuted.
-- The user's own assertions (e.g. "competitor X is in the account") are labeled "per account
-  team; not in SFDC" when systems of record don't show them.
-- Internal Slack/product statements are labeled "Internal — not customer-safe".
-- Never include tokens, tenant URLs, environment IDs or SFDC record IDs. Vendor URLs use placeholders.
-- ASCII diagrams in the PDF; Mermaid only in `.md` previews.
+- No hallucination. Every claim has a URL or an internal-record tag plus a verbatim quote in the
+  lane files. Anything not opened is "Unverified" or "not found", never inferred.
+- Source claims are hypotheses. The brief states which were confirmed, qualified or refuted.
+- The user's own assertions are labeled "per account team; not in systems of record" when the
+  systems don't show them.
+- Internal statements are labeled "Internal — not customer-safe".
+- Never include tokens, tenant URLs, environment IDs, record IDs or emails. Vendor URLs use placeholders.
+- ASCII diagrams in the PDF. Mermaid only in `.md` previews.
 - Report every source that returned nothing or failed.
