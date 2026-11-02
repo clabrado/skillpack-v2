@@ -4,12 +4,14 @@ description: >-
   Agentic call-intelligence debrief. Point it at one or more customer calls,
   transcripts or email threads (Krisp share links, Gong calls, .eml, .txt/.vtt/.docx,
   pasted text, or a Slack message that contains them). For each source it runs one
-  Opus agent that reads the primary source, triangulates across Salesforce, Power BI
-  (if existing customer), Gong, M365, Slack, Dynatrace product docs and the public web,
-  then produces a Dynatrace-branded 8–12 page PDF: bottom line, executive summary,
-  main talking points, standard + inverted analysis, tech stack known/unknown,
-  triangulated intelligence with confidence, next-meeting angle, POC angle, actions
-  and asks. Every PDF gets an independent adversarial QA pass before it is called done.
+  Opus agent that reads the primary source, decides what the call raises that needs
+  checking, and triangulates it across whichever connectors are available this session
+  (CRM, usage analytics, call recordings, mail/chat, product docs, the public web; none
+  is required), then produces a Dynatrace-branded PDF. Fixed spine: bottom line,
+  executive summary, main talking points, desired outcomes and asks, standard + inverted
+  analysis, triangulation with confidence, actions and asks. Other sections (account
+  context, tech stack, next-meeting angle, POC angle, ...) are included only when the call
+  gives them content. Every PDF gets an independent adversarial QA pass before it is called done.
 argument-hint: "<krisp-url | gong-call | file.eml | transcript.txt | slack-permalink | \"paste\"> [more sources...] [--send-to <slack-user>] [--out <dir>] [-clean]"
 when_to_use: >-
   After a customer call or email exchange when the user wants a triangulated
@@ -52,10 +54,12 @@ people for an artifact that will leave the company).
 ## Run
 
 1. **Gather** (main thread): resolve every source to local text files under
-   a per-source work dir in the scratchpad. Check auth up front so agents don't stall:
-   Gong and Power BI `token_status`, and `sf org list` (org = `$INTEL_SF_ORG`, else the
-   `sf` default org). On failure call that MCP's `browser_login`/`login` yourself.
-   A connector that isn't installed is reported as "not available", not as "no data".
+   a per-source work dir in the scratchpad. Take an inventory of the connectors this session
+   actually has (tool list / ToolSearch) and check their auth up front so agents don't stall
+   (`token_status` / `whoami` where offered; for a Salesforce CLI, `sf org list`, org =
+   `$INTEL_SF_ORG`, else the default org). On failure call that MCP's `browser_login`/`login`
+   yourself. Pass the inventory to each agent. A connector that isn't installed is reported as
+   "not available", not as "no data". Never assume one because a past run used it.
 2. **Analyse**: one Opus agent per source (`model: opus`, background, all in one
    message). Brief each agent with: the source file paths, everything you already
    know (Slack context, attendees, dates), `references/method.md`, `assets/skeleton.html`,
@@ -97,8 +101,9 @@ people for an artifact that will leave the company).
 - Fonts: the template uses DT Flow if the `.otf` files are present in `assets/template/`
   or `$INTEL_FONT_DIR`; otherwise it falls back to Arial. DT Flow is licensed brand
   material and is not shipped in this repo.
-- Connectors used when present: Gong, Power BI, Salesforce (`sf` CLI), M365, Slack,
-  Dynatrace docs, Highspot, LinkedIn. Missing ones are reported, never faked.
+- Connectors are all optional and discovered at runtime. Typical ones: a CRM (e.g. Salesforce
+  via `sf` CLI or MCP), usage analytics (e.g. Power BI), call recordings (e.g. Gong), M365,
+  Slack, product docs, Highspot, LinkedIn. Missing ones are reported, never faked.
 - `--send-to` attaches files through the Slack desktop app started with
   `--remote-debugging-port=9222`. Without it, delivery is text-only via the Slack connector.
 

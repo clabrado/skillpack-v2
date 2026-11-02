@@ -26,16 +26,22 @@ Extract: attendees + roles, every explicit ask, pains, numbers, dates, named
 systems/vendors, commitments made by **our** side (these are risk), and
 verbatim quotes with `(mm:ss)` timestamps.
 
-## 2. Triangulate — check every source, record what each returned
+## 2. Triangulate: check what the call raises, record what each source returned
 
-Run all of these. A source that returns nothing is still reported
-("Gong: no calls found for <account> in 12 months") — never silently skipped.
+First list what this call needs checked: each ask, number, claim our side made, named
+system, stakeholder and commitment. Then pick the sources that can confirm or refute those,
+from the connectors this session actually has. The table below lists common sources and
+what they're good for. It's a menu, not a checklist: use what's available and relevant, and
+add anything else the call points to (a vendor's docs, a partner portal, a prior brief).
+Every source you tried is reported, including empty ones ("Gong: no calls found for
+<account> in 12 months"). So is every relevant source that wasn't available. None is
+silently skipped.
 
-| Source | Tools | What to pull |
+| Source (typical) | Tools (if present) | What to pull |
 |---|---|---|
 | Salesforce | `sf data query` or the Salesforce MCP (org = `$INTEL_SF_ORG`, else the `sf` default org). Read-only SOQL. | Account (Type, owner, parent, industry, ARR/P2B fields), Opportunities (stage, amount, close, Next Steps, description), Contracts/products, Contacts matching attendees, recent Tasks/Events, POC__c on the opp |
 | Power BI | Power BI MCP (e.g. a consumption dataset via DAX) | Only if existing customer: DPS/consumption trend, capabilities in use, renewal date, health |
-| Gong | Known issue: filtered `search_calls` returns HTTP 500 and most calls show `userCanAccess:false`; use `list_calls` (my calls) and report the failure as a tool failure, not "no calls". Gong MCP `search_calls`, `get_call_details`, `retrieve_transcripts` (call `browser_login` on auth failure) | Prior calls with this account; what was promised before |
+| Call recordings (e.g. Gong) | the recording MCP (Gong: `search_calls`, `get_call_details`, `retrieve_transcripts`; filtered search has returned HTTP 500 before, so fall back to `list_calls` and report it as a tool failure, not "no calls") | Prior calls with this account; what was promised before |
 | M365 | M365 connector: mail, calendar, Teams chat and SharePoint search | Thread history, upcoming meetings, internal Teams chatter, account plans/decks |
 | Slack | Slack connector search (public + private) | Account channels, AE/SE DMs, product/roadmap channels for the topics raised (e.g. extension or feature names) |
 | Product truth | Dynatrace docs MCP, Highspot (if available), WebSearch on docs.dynatrace.com / dynatrace.com/hub | Verify every capability claim made on the call or planned for the follow-up. Flag over-promises. |
@@ -58,7 +64,15 @@ reported as "not available". Never run `dtctl` in parallel.
 - **Opportunity sizing**: only from real data (SF P2B, PBI consumption,
   stated counts). Unmeasured stays "unknown" — never invent a number.
 
-## 4. Document structure (adapt section names to the account)
+## 4. Document structure
+
+**Spine (always):** cover, executive summary, main talking points, what the customer is
+asking for (desired outcomes and asks), standard + inverted analysis, triangulated
+intelligence, actions & asks. **Evidence-driven (only with real content):** account
+context, technology & infrastructure, next-meeting angle, POC / proof angle, or a section
+this call needs that isn't listed (e.g. a constraint, a risk, a competitor). Number
+sections in the order used. Adapt the names to the account. The fictional example shows
+the full set, in this order:
 
 1. Cover — kicker, headline that states the play, the bottom line, 4 stat
    cards, 3 theme cards, 4 recommended moves
@@ -78,8 +92,8 @@ reported as "not available". Never run `dtctl` in parallel.
 11. 08 POC / proof angle — success criteria (if applicable)
 12. 09 Actions & asks — owner, date, action; leadership asks
 
-8–12 pages. Drop a section only if it has genuinely no content; say why in
-the cover or exec summary.
+Typically 8–12 pages; length follows the evidence. Never pad a section to keep the
+structure. When an expected section is dropped, say why in one line in the exec summary.
 
 ## 4b. Internal vs customer-safe
 
