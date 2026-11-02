@@ -1,4 +1,5 @@
-<!-- /debrief page skeleton (12 pages). Structure and classes of a shipped debrief; every [text] is a placeholder.
+<!-- /debrief page skeleton (full set; a run uses the SPINE pages plus only the EVIDENCE-DRIVEN pages the call warrants,
+     renumbered 00..N in the order used, per SKILL.md §3). Classes of a shipped debrief; every [text] is a placeholder.
      Built with the /intel build.py: placeholders WAVE, P, TOTAL, FOOTER are filled at build time. -->
 <style>
 .diag{font-family:Menlo,Consolas,monospace;font-size:6.9pt;line-height:1.28;background:#00092F;color:#DCE4FF;border-radius:8px;padding:9px 11px;margin:6px 0 8px;white-space:pre;overflow:hidden}
@@ -10,7 +11,7 @@ td .small{display:block}
 .cover .conf{margin-top:10px;position:relative;z-index:2}
 </style>
 
-<!-- ============ COVER ============ -->
+<!-- ============ COVER (SPINE) ============ -->
 <section class="page cover">
   <div class="top">
     <img class="logo" src="logo_color.svg">
@@ -49,7 +50,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ EXECUTIVE SUMMARY ============ -->
+<!-- ============ EXECUTIVE SUMMARY (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -74,7 +75,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 00 INTRODUCTION & BACKGROUND ============ -->
+<!-- ============ 00 INTRODUCTION & BACKGROUND (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -114,7 +115,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 01 CALL ANALYSIS: STANDARD ============ -->
+<!-- ============ 01 CALL ANALYSIS: STANDARD (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -142,7 +143,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 02 CALL ANALYSIS: INVERTED + ABSTRACT ============ -->
+<!-- ============ 02 CALL ANALYSIS: INVERTED + ABSTRACT (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -162,7 +163,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 03 DESIRED OUTCOMES ============ -->
+<!-- ============ 03 DESIRED OUTCOMES (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -186,7 +187,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 04 WHAT WE CAN DELIVER ============ -->
+<!-- ============ 04 WHAT WE CAN DELIVER (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -208,7 +209,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 05 TECHNICAL WIN OPPORTUNITIES ============ -->
+<!-- ============ 05 WIN OPPORTUNITIES (EVIDENCE-DRIVEN) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -234,7 +235,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 06 FIX BEFORE NEXT MEETING + VERIFICATION ============ -->
+<!-- ============ 06 CLAIMS CHECK (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -262,7 +263,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 07 RECOMMENDED NEXT STEPS ============ -->
+<!-- ============ 07 RECOMMENDED NEXT STEPS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -287,7 +288,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ 08 ACTIONS ============ -->
+<!-- ============ 08 ACTIONS (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -315,7 +316,7 @@ td .small{display:block}
   <div class="ftr"><span>{{FOOTER}}</span><span>{{P}} / {{TOTAL}}</span></div>
 </section>
 
-<!-- ============ APPENDIX: SOURCES ============ -->
+<!-- ============ APPENDIX: SOURCES (SPINE) ============ -->
 <section class="page">
   <div class="hdr"><img src="logo_color.svg"><span class="tag">[text]</span></div>
   <div class="kicker">[text]</div>
@@ -352,7 +353,7 @@ td .small{display:block}
       <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
       <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
       <tr><td><span class="pill p-m">[text]</span></td><td>[text]</td></tr>
-      <!--I3ROWS-->
+      <!-- add one row per connector tried / unavailable / not queried -->
     </table>
     <h3 style="margin-top:10px">[text]</h3>
     <p class="small" style="color:var(--ink)">[text]</p>
